@@ -7,9 +7,9 @@ if [ "$serverip" -eq "127.0.0.1" ] || [ "$serverip" -eq "" ] ;then
   serverip=$(ifconfig venet0:0 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " ")
 fi
 
-echo "Auto Generate Your Ip address".$serverip
-read -p "Corret it? Or press Enter" newip
-read -p "Sock 5 Port[1024-65535]: (Default 9200)" newport
+echo "Auto Get Your Ip address: ".$serverip
+read -p "Corret it? Or press Enter: " newip
+read -p "Sock 5 Port[1024-65535]: (Default 9200) " newport
 
 if [ "$newip" -ne "" ];then serverip=newip
 fi
