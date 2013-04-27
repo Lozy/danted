@@ -1,6 +1,22 @@
 #!/bin/sh
 #For Centos
 
+serverip=$(grep $(hostname) /etc/hosts| awk '{print $1}')
+if [[ "$serverip" == "127.0.0.1" ]] || [[ "$serverip" == "" ]] ;then
+	serverip=`ifconfig venet0:0 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " "`
+fi
+
+echo "Auto Generate Your Ip address".$serverip
+
+read -p "Corret it? Or press Enter" newip
+read -p "Sock 5 Port: (Default 9200)" newport
+
+if [ "$newip" -ne "" ];then serverip=newip
+fi
+
+if [ "$newport" -eq "" ];then newport=9200
+fi
+
 yum update -y
 yum install gcc make -y
 
@@ -10,14 +26,8 @@ cd dante*
 ./configure
 make && make install
 
-#serverip=`ifconfig venet0:0 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " "`
-serverip=$(grep $(hostname) /etc/hosts| awk '{print $1}')
-
-if [[ "$serverip" == "" ]];then
-	serverip=`ifconfig venet0:0 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " "`
-fi
 cat >/etc/danted.conf<<EOF
-internal: $serverip  port =  2012
+internal: $serverip  port = $newport
 external: $serverip
 method: username none
 logoutput: /var/log/danted.log
@@ -47,9 +57,17 @@ log: connect error
 }
 EOF
 
-cat >> ~/.bashrc<<EOF
-alias s5='/usr/local/sbin/sockd -f /etc/danted.conf &'
-alias kills5='killall sockd'
+cat >> ~/dante<<EOF
+#!/bin/bash
+
+killall danted
+killall sockd
+rm -rf /var/log/danted.log
+
+sleep 2
+/usr/local/sbin/sockd -f /etc/danted.conf &
+
+exit 0
 EOF
 
 /usr/local/sbin/sockd -f /etc/danted.conf &
