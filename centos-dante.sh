@@ -2,12 +2,12 @@
 #For Centos
 
 serverip=$(grep $(hostname) /etc/hosts| awk '{print $1}')
-if [[ "$serverip" == "127.0.0.1" ]] || [[ "$serverip" == "" ]] ;then
-	serverip=`ifconfig venet0:0 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " "`
+
+if [ "$serverip" -eq "127.0.0.1" ] || [ "$serverip" -eq "" ] ;then
+	serverip=$(ifconfig venet0:0 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " ")
 fi
 
 echo "Auto Generate Your Ip address".$serverip
-
 read -p "Corret it? Or press Enter" newip
 read -p "Sock 5 Port: (Default 9200)" newport
 
@@ -74,4 +74,3 @@ EOF
 rm dante-1.3.2* -rf
 rm centos-dante.sh -rf
 exit
-
