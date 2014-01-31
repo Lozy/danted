@@ -1,5 +1,6 @@
 #!/bin/sh
 #For Centos
+# 2014.1.31
 DEFAULT_PORT="2014"
 DEFAULT_USER="sock5"
 DEFAULT_PAWD="sock5"
