@@ -15,8 +15,9 @@ genconfig(){
 internal: ${IP} port = ${PORT}
 external: ${IP}
 #socksmethod: username none
-user.notprivileged: sock
+#socksmethod: username
 socksmethod: pam.username
+user.notprivileged: sock
 logoutput: /var/log/danted.${num}.log
 
 client pass {
