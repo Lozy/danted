@@ -16,3 +16,24 @@
 <li>2. 分析log对连接sock5的用户进行统计。</li>
 <li>3. Ubuntu/Redhat 未进行测试。</li>
 </ul>
+<hr>
+<h3>******安装用说明</h3>
+<p>下载 install.sh </p>
+<p>修改 默认参数，DEFAULT_PORT 为默认端口，DEFAULT_USER PAM用户名，DEFAULT_PAWD PAM用户对于密码</p>
+<p>修改后，执行 bash install.sh </p>
+<p>显示 Dante Server Install Successfuly! 则表明成功。</p>
+<p>显示 Dante Server Install Failed! 则表明安装失败，求留言反馈操作系统+具体问题。</p>
+<h3>******安装后使用说明</h3>
+<ul>
+<li> 1. 命令参数 /etc/init.d/danted {start|stop|restart|status|add|del}</li>
+<li> 2. 重启sock5 /etc/init.d/danted restart  或者 service danted restart </li>
+<li> 3. 关闭sock5 /etc/init.d/danted stop 或者 service danted stop </li>
+<li> 4. 开启sock5 /etc/init.d/danted start 或者 service danted start </li>
+<li> 5. 查看sock5状态 /etc/init.d/danted status 或者 service danted status </li>
+<li> 6. 添加SOCK5 PAM用户/修改密码 /etc/init.d/danted add 用户名 密码</li>
+<li> 7. 删除SOCK5 PAM用户 /etc/init.d/danted del 用户名</li>
+<li> 8. 配置文件路径/etc/danted/conf/ </li>
+<li> 9. 日志记录路径 /var/log/danted.*.log</li>
+<li> 9. danted 帮助命令 danted --help </li>
+<li> 9. </li>
+</ul>
