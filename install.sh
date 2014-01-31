@@ -1,8 +1,7 @@
-#!/bin/sh
-#For Centos
+#!/bin/bash
 DEFAULT_PORT="2014"
-DEFAULT_USER="sock5"
-DEFAULT_PAWD="sock5"
+DEFAULT_USER="sock"
+DEFAULT_PAWD="sock"
 VERSION="v1.4.0"
 
 genconfig(){
@@ -46,6 +45,7 @@ log: connect error
 EOF
 }
 
+path=$(cd `dirname $0`;pwd )
 ( [ -n "$(grep CentOS /etc/issue)" ] \
   && ( yum install gcc g++ make vim pam-devel tcp_wrappers-devel unzip httpd-tools -y ) ) \
   || ( [ -n "$(grep -E 'Debian|Ubuntu' /etc/issue)" ] \
@@ -87,7 +87,7 @@ tar zxvf apps-sys-utils-start-stop-daemon-IR1_9_18-2.tar.gz
 gcc apps/sys-utils/start-stop-daemon-IR1_9_18-2/start-stop-daemon.c -o start-stop-daemon -o /usr/local/sbin/start-stop-daemon
 fi
 #libpam-pwdfile
-if [ ! -s /lib/security/pam_pwdfile.so ] || [ ! -s /lib/i386-linux-gnu/security/pam_pwdfile.so ];then
+if [ ! -s /lib/security/pam_pwdfile.so ];then
 wget https://github.com/tiwe-de/libpam-pwdfile/archive/master.zip -O master.zip
 unzip master.zip
 cd libpam-pwdfile-master/
@@ -95,7 +95,7 @@ make && make install
 cd ../
 fi
 
-if [ ! -s /etc/danted/sbin/sockd ] || [ -z "$(/etc/danted/sbin/sockd -v | grep '$VERSION')" ];then
+if [ ! -s /etc/danted/sbin/sockd ] || [ -z "$(/etc/danted/sbin/sockd -v | grep "$VERSION")" ];then
 wget http://www.inet.no/dante/files/dante-1.4.0.tar.gz
 tar zxvf dante*
 cd dante*
@@ -113,7 +113,7 @@ EOF
 /usr/bin/htpasswd -c -d -b /etc/danted/socks.passwd ${DEFAULT_USER} ${DEFAULT_PAWD}
 
 cat > /etc/init.d/danted <<'EOF'
-#! /bin/sh
+#! /bin/bash
 ### BEGIN INIT INFO
 # Provides:          danted
 # Reprogarm:         airski
@@ -144,7 +144,7 @@ start_daemon_all(){
     	echo -n "  config $NAME "
     	
     	if [ -s $PIDFILE ] && [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ];then
-    	     echo " [ Runing;Failed ] " 
+    	     echo -e "\033[1;31m [ Runing;Failed ] \033[0m" 
     	     continue
     	fi
 
@@ -154,12 +154,12 @@ start_daemon_all(){
         if ! egrep -cve '^ *(#|$)' \
 	       -e '^(logoutput|user\.((not)?privileged|libwrap)):' $configed > /dev/null
 	    then
-		   echo " [ not configured ]"
+		   echo -e "\033[1;31m [ not configured ] \033[0m"
 		   continue
 	    fi
         start-stop-daemon --start --quiet --background --oknodo --pidfile $PIDFILE \
 		--exec $DAEMON -- -f $configed -p $PIDFILE
-		( [ -s $PIDFILE ] && echo " [ Runing ]" ) || echo " [ Faild ]"
+		( [ -s $PIDFILE ] && echo -e "\033[32m [ Runing ] \033[0m" ) || echo -e "\033[1;31m  [ Faild ] \033[0m"
     done
 }
 stop_daemon_all(){
@@ -167,14 +167,14 @@ stop_daemon_all(){
     	NAME=$(echo $configed | sed 's/.*\/\(.*\)\.conf/\1/g')
     	PIDFILE=/var/run/$NAME.pid
         echo -n "  config $NAME "
-        if [[ ! -s $PIDFILE ]];then 
-          echo " [ PID.LOST;Unable ]" 
+        if [ ! -s $PIDFILE ];then 
+          echo -e "\033[1;31m  [ PID.LOST;Unable ] \033[0m" 
           continue
         fi
         start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE \
 		--exec $DAEMON -- -f $configed -p $PIDFILE
 		( [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ] && \
-			echo " [ Failed ]" ) || echo " [ Stop ]"
+			echo -e "\033[1;31m  [ Failed ] \033[0m" ) || echo -e "\033[32m [ Stop ] \033[0m"
     done
 }
 reload_daemon_all(){
@@ -184,16 +184,17 @@ reload_daemon_all(){
         echo -n "  config $NAME "
         if [ -s $PIDFILE ];then
         	if [ -z "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ];then
-        	  echo " [ PID.DIE;Unable ]"  
+        	  echo -e "\033[1;31m [ PID.DIE;Unable ] \033[0m"  
         	  continue
         	fi
        else
-            echo " [ PID.LOST;Unable ]" 
+            echo -e "\033[1;31m [ PID.LOST;Unable ] \033[0m" 
             continue
         fi
         start-stop-daemon --stop --signal 1 --quiet --oknodo --pidfile $PIDFILE \
 		--exec $DAEMON -- -f $configed -p $PIDFILE
-		( [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ] && echo " [ Runing ]" ) || echo " [ Failed ]"
+		( [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ] \
+			&& echo -e "\033[32m [ Runing ] \033[0m" ) || echo -e "\033[1;31m [ Failed ] \033[0m"
     done
 }
 status_daemon_all(){
@@ -201,11 +202,12 @@ status_daemon_all(){
 		NAME=$(echo $configed | sed 's/.*\/\(.*\)\.conf/\1/g')
     	PIDFILE=/var/run/$NAME.pid
         echo -n "  config $NAME " $(cat $configed | grep '^internal' | sed 's/internal:\(.*\)port.*=\(.*\)/\1:\2/g' | sed 's/ //g')"  "
-        if [[ ! -s $PIDFILE ]];then
-        	echo " [ Stop ]"
+        if [ ! -s $PIDFILE ];then
+        	echo -e "\033[1;31m [ Stop ] \033[0m"
         	continue
         fi
-        ( [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ] && echo " [ Runing ]" ) || echo " [ PID.DIE;Unable ]"
+        ( [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ] \
+        	&& echo -e "\033[32m [ Runing ] \033[0m" ) || echo -e "\033[1;31m [ PID.DIE;Unable ] \033[0m"
     done
     echo ">>>>>>>>>>>>>>>>>>>>>>>>"
     echo "  Active User:" $(cat /etc/danted/socks.passwd | while read line;do echo $line| sed 's/\(.*\):.*/\1/';done) 
@@ -265,14 +267,45 @@ chmod +x /etc/init.d/danted
 [ -n "$(grep CentOS /etc/issue)" ]  && chkconfig --add danted
 [ -n "$(grep -E 'Debian|Ubuntu' /etc/issue)" ] && update-rc.d danted defaults
 ln -s /etc/danted/sbin/sockd /usr/bin/danted
-service danted start
+service danted restart
 clear
-cat <<EOF
-Danted Auto Config 
-*************************************
-SOCK5 ${Getserverip}
-PORT  ${DEFAULT_PORT}
-Auth  ${DEFAULT_USER}:${DEFAULT_PAWD}
-*************************************
+
+#Color Variable
+CSI=$(echo -e "\033[")
+CEND="${CSI}0m"
+CDGREEN="${CSI}32m"
+CRED="${CSI}1;31m"
+CGREEN="${CSI}1;32m"
+CYELLOW="${CSI}1;33m"
+CBLUE="${CSI}1;34m"
+CMAGENTA="${CSI}1;35m"
+CCYAN="${CSI}1;36m"
+CQUESTION="$CMAGENTA"
+CWARNING="$CRED"
+CMSG="$CCYAN"
+#Color Variable
+
+if [ -n "$(netstat -atn | grep "$DEFAULT_PORT")" ];then
+  cat <<EOF
+${CCYAN}+-----------------------------------------+$CEND
+${CGREEN} Dante Socks5 Install Done. $CEND
+${CCYAN}+-----------------------------------------+$CEND
+${CGREEN} Dante Version:       $CMAGENTA 1.4.0$CEND
+${CGREEN} Socks5 Info:         $CMAGENTA$CEND
 EOF
-exit 0
+ echo "${Getserverip}" | while read theip;do
+    echo "${CGREEN}                      $CMAGENTA ${theip}:${DEFAULT_PORT}$CEND"
+ done
+ cat <<EOF
+${CGREEN} Socks5 User&Passwd:  $CMAGENTA ${DEFAULT_USER}:${DEFAULT_PAWD}$CEND
+${CCYAN}+_________________________________________+$CEND
+EOF
+ echo -e "\033[32m Dante Server Install Successfuly! \033[0m"
+else
+ echo -e "\033[1;31m Dante Server Install Failed! \033[0m"
+ exit 
+fi
+
+cd $path
+rm -rf $0
+exit
