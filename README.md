@@ -34,6 +34,5 @@
 <li> 7. 删除SOCK5 PAM用户 /etc/init.d/danted del 用户名</li>
 <li> 8. 配置文件路径/etc/danted/conf/ </li>
 <li> 9. 日志记录路径 /var/log/danted.*.log</li>
-<li> 9. danted 帮助命令 danted --help </li>
-<li> 9. </li>
+<li> 10. danted 帮助命令 danted --help </li>
 </ul>
