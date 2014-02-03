@@ -77,8 +77,8 @@ else
    	  genconfig $configfile $serverip $port 0
 fi
 
-mkdir -p /tmp
-cd /tmp
+mkdir -p /tmp/danted
+cd /tmp/danted
 
 #start-stop-daemon
 if [ -z "$(command -v start-stop-daemon)" ];then
@@ -104,7 +104,7 @@ make && make install
 cd ../../
 fi
 #Complile Done
-rm /tmp/* -rf
+rm /tmp/danted -rf
 
 cat > /etc/pam.d/sockd  <<EOF
 auth required pam_pwdfile.so pwdfile /etc/danted/socks.passwd
