@@ -36,3 +36,13 @@
 <li> 9. 日志记录路径 /var/log/danted.*.log</li>
 <li> 10. danted 帮助命令 danted --help </li>
 </ul>
+<h3>******使用注意事项</h3>
+<ul>
+<li> 1. 绝大部分浏览器（除了Opera）都不支持带密码认证的Socks5，所以使用电脑需要安装proxifier/proxycap 等软件做验证处理。<、li> 
+<li> 2. 如果是固定IP/Ip 段 可以修改配置文件，设置白名单访问。
+<ol>
+<li>进入 /etc/danted/conf/ 找到配置文件，删除 socksmethod: username none 之前的注释符号"#"，在 socksmethod: pam.username 之前添加注释符号"#"。</li>
+<li>修改 client pass {} 模块下的 from: 0.0.0.0/0 to: 0.0.0.0/0 . 把 0.0.0.0 修改为需要使用代理的Ip段/IP地址 如 114.114.114.0/24 </li>
+</ol>
+</li>
+</ul>
