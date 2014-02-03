@@ -42,7 +42,8 @@
 <li> 2. 如果是固定IP/Ip 段 可以修改配置文件，设置白名单访问。
 <ol>
 <li>进入 /etc/danted/conf/ 找到配置文件，删除 socksmethod: username none 之前的注释符号"#"，在 socksmethod: pam.username 之前添加注释符号"#"。</li>
-<li>修改 client pass {} 模块下的 from: 0.0.0.0/0 to: 0.0.0.0/0 . 把 0.0.0.0 修改为需要使用代理的Ip段/IP地址 如 114.114.114.0/24 </li>
+<li>修改 client pass {} 模块下的 from: 0.0.0.0/0 to: 0.0.0.0/0 . 把 第一个 0.0.0.0 修改为需要使用代理的Ip段/IP地址 如 114.114.114.0/24 . 多个访问源，请复制多个 client pass {} 模块</li>
 </ol>
 </li>
+<li>重启Danted 进程 service danted restart </li>
 </ul>
