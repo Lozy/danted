@@ -22,14 +22,14 @@ logoutput: /var/log/danted.${num}.log
 ###########
 #client pass {
 #from: Master_IP/32 to: 0.0.0.0/0
-#log: connect disconnect
 #socksmethod: none
+#log: connect disconnect
 #}
 ###########
 client pass {
 from: 0.0.0.0/0 to: 0.0.0.0/0
-log: connect disconnect
 socksmethod: pam.username
+log: connect disconnect
 }
 socks pass {
 from: 0.0.0.0/0 to: 0.0.0.0/0 port gt 1023
@@ -57,6 +57,7 @@ path=$(cd `dirname $0`;pwd )
 ( [ -n "$(grep CentOS /etc/issue)" ] \
   && ( yum install gcc g++ make vim pam-devel tcp_wrappers-devel unzip httpd-tools -y ) ) \
   || ( [ -n "$(grep -E 'Debian|Ubuntu' /etc/issue)" ] \
+  && ( apt-get update ) 
   && ( apt-get install gcc g++ make vim libpam-dev libwrap0-dev unzip apache2-utils -y ) )\
   || exit 0
 
