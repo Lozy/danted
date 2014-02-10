@@ -58,11 +58,13 @@ path=$(cd `dirname $0`;pwd )
   && ( yum install gcc g++ make vim pam-devel tcp_wrappers-devel unzip httpd-tools -y ) ) \
   || ( [ -n "$(grep -E 'Debian|Ubuntu' /etc/issue)" ] \
   && ( apt-get update ) 
+  && ( apt-get purge dante-server )
   && ( apt-get install gcc g++ make vim libpam-dev libwrap0-dev unzip apache2-utils -y ) )\
   || exit 0
 
 useradd sock -s /bin/false > /dev/null 2>&1
 #echo sock:sock | chpasswd
+rm -rf /etc/danted
 mkdir -p /etc/danted/conf
 
 Getserverip_n=$(ifconfig | grep 'inet addr' | grep -Ev 'inet addr:127.0.0|inet addr:192.168.0|inet addr:10.0.0' | sed -n 's/.*inet addr:\([^ ]*\) .*/\1/p' | wc -l)
