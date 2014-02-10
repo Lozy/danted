@@ -9,12 +9,12 @@
 <li>5. 系统启动后自动加载。</li>
 <li>6. 认证方式可选： 无用户名密码，系统用户名密码，Pam用户名密码</li>
 <li>7. 完美支持Centos/Debian,自动识别系统进行安装配置。</li>
+<li>8. 自定义对连接客户端认证方式，支持设置某些Ip/IP段无需认证即可连接。</li>
 </ul>
 <h3>******未解决问题</h3>
 <ul>
-<li>1. sock5多用户验证策略，在只是用一个配置文件的情况下，指定了采用用户认证，则无法指定某些Ip段无需认证即可连接。</li>
-<li>2. 分析log对连接sock5的用户进行统计。</li>
-<li>3. Ubuntu/Redhat 未进行测试。</li>
+<li>1. 分析log对连接sock5的用户进行统计。</li>
+<li>2. Ubuntu/Redhat 未进行测试。</li>
 </ul>
 <hr>
 <h3>******安装用说明</h3>
@@ -41,8 +41,8 @@
 <li> 1. 绝大部分浏览器（除了Opera）都不支持带密码认证的Socks5，所以使用电脑需要安装proxifier/proxycap 等软件做验证处理。<、li> 
 <li> 2. 如果是固定IP/Ip 段 可以修改配置文件，设置白名单访问。
 <ol>
-<li>进入 /etc/danted/conf/ 找到配置文件，删除 socksmethod: username none 之前的注释符号"#"，在 socksmethod: pam.username 之前添加注释符号"#"。</li>
-<li>修改 client pass {} 模块下的 from: 0.0.0.0/0 to: 0.0.0.0/0 . 把 第一个 0.0.0.0 修改为需要使用代理的Ip段/IP地址 如 114.114.114.0/24 . 多个访问源，请复制多个 client pass {} 模块</li>
+<li>进入 /etc/danted/conf/ 找到配置文件</li>
+<li>修改 第一个client pass {} 模块下的 from: Master_IP/32 to: 0.0.0.0/0 . 把 Master_IP/32 修改为需要使用代理的Ip段/IP地址 如 114.114.114.0/24 或者 5.5.5.5/32 . 多个访问源，请复制多个 client pass {} 模块</li>
 </ol>
 </li>
 <li>重启Danted 进程 service danted restart </li>
