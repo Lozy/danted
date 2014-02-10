@@ -13,15 +13,23 @@ genconfig(){
   cat >$CONFIGFILE<<EOF
 internal: ${IP} port = ${PORT}
 external: ${IP}
-#socksmethod: username none
+#socksmethod: none
 #socksmethod: username
-socksmethod: pam.username
+socksmethod: pam.username none
 user.notprivileged: sock
 logoutput: /var/log/danted.${num}.log
 
+###########
+#client pass {
+#from: Master_IP/32 to: 0.0.0.0/0
+#log: connect disconnect
+#socksmethod: none
+#}
+###########
 client pass {
 from: 0.0.0.0/0 to: 0.0.0.0/0
 log: connect disconnect
+socksmethod: pam.username
 }
 socks pass {
 from: 0.0.0.0/0 to: 0.0.0.0/0 port gt 1023
