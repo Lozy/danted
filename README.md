@@ -19,9 +19,10 @@
 <hr>
 <h3>******安装用说明</h3>
 <ul>
-<li> 1. 下载 wget --no-check-certificate https://raw.github.com/Lozy/danted/master/install.sh -O install.sh </li>
+<li> 1. 下载 
+<code> wget --no-check-certificate https://raw.github.com/Lozy/danted/master/install.sh -O install.sh </code> </li>
 <li> 2. [可选] 修改 默认参数，DEFAULT_PORT 为默认端口，DEFAULT_USER PAM用户名，DEFAULT_PAWD PAM用户对应密码 MASTER_IP 为免认证白名单（域名，IP可选：  如默认的buyvm.info 或者具体Ip 8.8.8.8/32 ）</li>
-<li> 3. 修改后，执行 bash install.sh </li>
+<li> 3. 修改后，执行 <code> bash install.sh </code> </li>
 <li> 4. 若运行结束后显示 Dante Server Install Successfuly! 则表明成功。
 <p>显示 Dante Server Install Failed! 则表明安装失败，求留言反馈操作系统+具体问题。</p></li>
 </ul>
