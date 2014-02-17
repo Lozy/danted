@@ -12,7 +12,7 @@ genconfig(){
   PORT=$3
   TAG=$4
   cat >$CONFIGFILE<<EOF
-#### Danted Sock5 Config FOR: ${TAG} ${IP}
+#### Danted Sock5 Config FOR: ${TAG} ${IP} #####
 internal: ${IP} port = ${PORT}
 external: ${IP}
 #socksmethod: none
@@ -21,13 +21,13 @@ socksmethod: pam.username none
 user.notprivileged: sock
 logoutput: /var/log/danted.${TAG}.log
 
-##### Master Config ######
+##### Master Config ##############
 client pass {
 from: ${MASTER_IP} to: 0.0.0.0/0
 socksmethod: none
 log: connect disconnect
 }
-#########################
+#################################
 client pass {
 from: 0.0.0.0/0 to: 0.0.0.0/0
 socksmethod: pam.username
