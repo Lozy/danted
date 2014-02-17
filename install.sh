@@ -2,6 +2,7 @@
 DEFAULT_PORT="2014"
 DEFAULT_USER="sock"
 DEFAULT_PAWD="sock"
+MASTER_IP="buyvm.info"
 VERSION="v1.4.0"
 
 genconfig(){
@@ -19,13 +20,13 @@ socksmethod: pam.username none
 user.notprivileged: sock
 logoutput: /var/log/danted.${num}.log
 
-###########
-#client pass {
-#from: Master_IP/32 to: 0.0.0.0/0
-#socksmethod: none
-#log: connect disconnect
-#}
-###########
+##### Master Config ######
+client pass {
+from: ${MASTER_IP} to: 0.0.0.0/0
+socksmethod: none
+log: connect disconnect
+}
+#########################
 client pass {
 from: 0.0.0.0/0 to: 0.0.0.0/0
 socksmethod: pam.username
