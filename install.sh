@@ -12,6 +12,7 @@ genconfig(){
   PORT=$3
   TAG=$4
   cat >$CONFIGFILE<<EOF
+#### Danted Sock5 Config FOR: ${TAG} ${IP}
 internal: ${IP} port = ${PORT}
 external: ${IP}
 #socksmethod: none
