@@ -86,7 +86,7 @@ if [ -z "$serverip" ];then
    done
 else
       port=$DEFAULT_PORT
-      intface=$(grep "$serverip" -1 | sed -n 1p | awk '{print $1}')
+      intface=$(ifconfig | grep "$serverip" -1 | sed -n 1p | awk '{print $1}')
       configfile="/etc/danted/conf/sockd-${intface}.conf"
    	  genconfig $configfile $serverip $port $intface
 fi
