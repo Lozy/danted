@@ -58,8 +58,8 @@ path=$(cd `dirname $0`;pwd )
 ( [ -n "$(grep CentOS /etc/issue)" ] \
   && ( yum install gcc g++ make vim pam-devel tcp_wrappers-devel unzip httpd-tools -y ) ) \
   || ( [ -n "$(grep -E 'Debian|Ubuntu' /etc/issue)" ] \
-  && ( apt-get update ) 
-  && ( apt-get purge dante-server )
+  && ( apt-get update ) \
+  && ( apt-get purge dante-server ) \
   && ( apt-get install gcc g++ make vim libpam-dev libwrap0-dev unzip apache2-utils -y ) )\
   || exit 0
 
