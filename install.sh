@@ -10,7 +10,7 @@ genconfig(){
   CONFIGFILE=$1
   IP=$2
   PORT=$3
-  num=$4
+  TAG=$4
   cat >$CONFIGFILE<<EOF
 internal: ${IP} port = ${PORT}
 external: ${IP}
@@ -18,7 +18,7 @@ external: ${IP}
 #socksmethod: username
 socksmethod: pam.username none
 user.notprivileged: sock
-logoutput: /var/log/danted.${num}.log
+logoutput: /var/log/danted.${TAG}.log
 
 ##### Master Config ######
 client pass {
@@ -76,17 +76,18 @@ serverip=$Getserverip
 [ $Getserverip_n -gt 1 ] && echo "$Getserverip" && read -p  "Server IP > 1, Please Input Taget Danted Server IP OR Enter to config all " serverip
 
 if [ -z "$serverip" ];then
-   i=0
    echo "$Getserverip" | while read theip;do
       port=$DEFAULT_PORT
-      configfile="/etc/danted/conf/sockd-"$(echo $Getserverip | sed 's/.*\.\(.*\)/\1/g')"${i}.conf"
-   	  genconfig $configfile $theip $port $i
+      intface=$(ifconfig | grep "$Getserverip" -1 | sed -n 1p | awk '{print $1}' )
+      configfile="/etc/danted/conf/sockd-${intface}.conf"
+   	  genconfig $configfile $theip $port $Intface
    	  i=$((i+1))
    done
 else
       port=$DEFAULT_PORT
-      configfile="/etc/danted/conf/sockd-"$(echo $serverip | sed 's/.*\.\(.*\)/\1/g')"${i}.conf"
-   	  genconfig $configfile $serverip $port 0
+      intface=$(grep "$serverip" -1 | sed -n 1p | awk '{print $1}')
+      configfile="/etc/danted/conf/sockd-${intface}.conf"
+   	  genconfig $configfile $serverip $port $intface
 fi
 
 mkdir -p /tmp/danted
