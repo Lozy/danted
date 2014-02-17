@@ -2,7 +2,7 @@
 DEFAULT_PORT="2014"
 DEFAULT_USER="sock"
 DEFAULT_PAWD="sock"
-MASTER_IP="buyvm.info"
+MASTER_IP="master.buyvm.info"
 VERSION="v1.4.0"
 
 genconfig(){
