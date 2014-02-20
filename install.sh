@@ -79,7 +79,7 @@ serverip=$Getserverip
 if [ -z "$serverip" ];then
    echo "$Getserverip" | while read theip;do
       port=$DEFAULT_PORT
-      intface=$(ifconfig | grep "$Getserverip" -1 | sed -n 1p | awk '{print $1}' | sed 's/:/-/g')
+      intface=$(ifconfig | grep "$theip" -1 | sed -n 1p | awk '{print $1}' | sed 's/:/-/g')
       configfile="/etc/danted/conf/sockd_${intface}.conf"
    	  genconfig $configfile $theip $port $Intface
    	  i=$((i+1))
