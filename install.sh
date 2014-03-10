@@ -5,6 +5,24 @@ DEFAULT_PAWD="sock"
 MASTER_IP="master.buyvm.info"
 VERSION="v1.4.0"
 
+
+while getopts "Vn" arg       #"$OPTARG"
+do
+        case $arg in
+              "n")
+                  setNoPwd="1"
+                ;;
+              "V")
+                  echo $VERSION
+                  exit
+                ;;
+              "?")  
+                  echo "USAGE: ./stool [ -k kill , -c | -r restart , -x | -s status | -g generate configs,need file]"
+                  exit 1
+               ;;
+        esac
+done
+
 genconfig(){
   # CONFIGFILE $IP $PORT $N
   CONFIGFILE=$1
@@ -30,7 +48,13 @@ log: connect disconnect
 #################################
 client pass {
 from: 0.0.0.0/0 to: 0.0.0.0/0
-socksmethod: pam.username
+EOF
+if [ "$setNoPwd" == "1" ];then
+  echo "socksmethod: none" >> $CONFIGFILE
+else
+  echo "socksmethod: pam.username" >> $CONFIGFILE
+fi
+  cat >>$CONFIGFILE<<EOF
 log: connect disconnect
 }
 socks pass {
