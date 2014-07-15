@@ -49,4 +49,5 @@
 </ol>
 </li>
 <li>重启Danted 进程 service danted restart </li>
+<li>测试64位系统 centos 会出现认证失败 请添加一条命令 cp /lib/security/pam_pwdfile.so /lib64/security/</li>
 </ul>
