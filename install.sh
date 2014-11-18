@@ -1,27 +1,9 @@
 #!/bin/bash
 DEFAULT_PORT="2014"
-DEFAULT_USER="sock"
-DEFAULT_PAWD="sock"
-MASTER_IP="master.buyvm.info"
+DEFAULT_USER="danted"
+DEFAULT_PAWD="danted"
+MASTER_IP="buyvm.info"
 VERSION="v1.4.0"
-
-
-while getopts "Vn" arg       #"$OPTARG"
-do
-        case $arg in
-              "n")
-                  setNoPwd="1"
-                ;;
-              "V")
-                  echo $VERSION
-                  exit
-                ;;
-              "?")  
-                  echo "USAGE: ./stool [ -k kill , -c | -r restart , -x | -s status | -g generate configs,need file]"
-                  exit 1
-               ;;
-        esac
-done
 
 genconfig(){
   # CONFIGFILE $IP $PORT $N
@@ -48,13 +30,7 @@ log: connect disconnect
 #################################
 client pass {
 from: 0.0.0.0/0 to: 0.0.0.0/0
-EOF
-if [ "$setNoPwd" == "1" ];then
-  echo "socksmethod: none" >> $CONFIGFILE
-else
-  echo "socksmethod: pam.username" >> $CONFIGFILE
-fi
-  cat >>$CONFIGFILE<<EOF
+socksmethod: pam.username
 log: connect disconnect
 }
 socks pass {
@@ -105,7 +81,7 @@ if [ -z "$serverip" ];then
       port=$DEFAULT_PORT
       intface=$(ifconfig | grep "$theip" -1 | sed -n 1p | awk '{print $1}' | sed 's/:/-/g')
       configfile="/etc/danted/conf/sockd_${intface}.conf"
-   	  genconfig $configfile $theip $port $Intface
+   	  genconfig $configfile $theip $port $intface
    	  i=$((i+1))
    done
 else
@@ -137,7 +113,7 @@ if [ ! -s /etc/danted/sbin/sockd ] || [ -z "$(/etc/danted/sbin/sockd -v | grep "
 wget http://www.inet.no/dante/files/dante-1.4.0.tar.gz
 tar zxvf dante*
 cd dante*
-./configure --with-sockd-conf=/etc/danted/conf/sockd.conf --prefix=/etc/danted
+./configure --with-sockd-conf=${configfile} --prefix=/etc/danted
 make && make install
 cd ../../
 fi
@@ -195,9 +171,14 @@ start_daemon_all(){
 		   echo -e "\033[1;31m [ not configured ] \033[0m"
 		   continue
 	    fi
-        start-stop-daemon --start --quiet --background --oknodo --pidfile $PIDFILE \
-		--exec $DAEMON -- -f $configed -p $PIDFILE
-		( [ -s $PIDFILE ] && echo -e "\033[32m [ Runing ] \033[0m" ) || echo -e "\033[1;31m  [ Faild ] \033[0m"
+        if [ $(ls /etc/danted/conf/*.conf | wc -l) -eq 1 ];then
+            start-stop-daemon --start --quiet --background --oknodo --pidfile $PIDFILE \
+                --exec $DAEMON -- -D -p $PIDFILE -N 1 -n
+        else
+            start-stop-daemon --start --quiet --background --oknodo --pidfile $PIDFILE \
+		--exec $DAEMON -- -f $configed -p $PIDFILE -N 1 -n
+        fi	
+	( [ -s $PIDFILE ] && echo -e "\033[32m [ Runing ] \033[0m" ) || echo -e "\033[1;31m  [ Faild ] \033[0m"
     done
 }
 stop_daemon_all(){
