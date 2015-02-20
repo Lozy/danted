@@ -22,7 +22,7 @@
 </ul>
 <h3>******已解决问题</h3>
 <ul>
-<li>测试64位系统 centos 会出现认证失败 请添加一条命令 cp /lib/security/pam_pwdfile.so /lib64/security/</li>
+<li>测试64位系统 centos 会出现认证失败 请添加一条命令 <code>cp /lib/security/pam_pwdfile.so /lib64/security/ </code></li>
 </ul>
 <h3>******未解决问题</h3>
 <ul>
