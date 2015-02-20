@@ -20,6 +20,10 @@
 <li>7. 完美支持Centos/Debian,自动识别系统进行安装配置。</li>
 <li>8. 自定义对连接客户端认证方式，支持设置某些IP/IP段无需认证即可连接。</li>
 </ul>
+<h3>******已解决问题</h3>
+<ul>
+<li>测试64位系统 centos 会出现认证失败 请添加一条命令 cp /lib/security/pam_pwdfile.so /lib64/security/</li>
+</ul>
 <h3>******未解决问题</h3>
 <ul>
 <li>1. 分析log对连接sock5的用户进行统计。</li>
@@ -58,5 +62,4 @@
 </ol>
 </li>
 <li>重启Danted 进程 service danted restart </li>
-<li>测试64位系统 centos 会出现认证失败 请添加一条命令 cp /lib/security/pam_pwdfile.so /lib64/security/</li>
 </ul>
