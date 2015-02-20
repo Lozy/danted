@@ -1,57 +1,70 @@
 #!/bin/bash
-DEFAULT_PORT="2014"
+VERSION="v1.3.2"
+DEFAULT_PORT="62015"
 DEFAULT_USER="danted"
 DEFAULT_PAWD="danted"
 MASTER_IP="buyvm.info"
-VERSION="v1.4.0"
+SERVERIP=$(ifconfig | grep 'inet addr' | grep -Ev 'inet addr:127.0.0|inet addr:192.168.0|inet addr:10.0.0' | sed -n 's/.*inet addr:\([^ ]*\) .*/\1/p')
+###############################################------------Menu()---------#####################################################
+for _PARAMETER in $*
+do
+    case "${_PARAMETER}" in
+      --port=*)
+        PORT="${_PARAMETER#--port=}"
+        [ -n "$PORT" ] && DEFAULT_PORT=${PORT}
+      ;;
+      --ip=*)   #split in ; ip1;ip2;
+        GETSERVERIP=$( echo "${_PARAMETER#--ip=}" | sed 's/;/\n/g' | sed '/^$/d')
+        [ -n "${GETSERVERIP}" ] && SERVERIP="${GETSERVERIP}"
+      ;;
+      --user=*)
+        user="${_PARAMETER#--user=}"
+        [ -n "${user}" ] && DEFAULT_USER="${user}"
+      ;;
+      --passwd=*)
+        passwd="${_PARAMETER#--passwd=}"
+        [ -n "${passwd}" ] && DEFAULT_PAWD="${passwd}"
+      ;;
+      --master=*)
+        master="${_PARAMETER#--master=}"
+        [ -n "${master}" ] && MASTER_IP="${master}"
+      ;;
+      --help|-h)
+        clear
+        options=( "--port=[2014]@port for dante socks5 server" \
+                  "--ip=@Socks5 Server Ip address" \
+                  "--user=@Socks5 Auth user" \
+                  "--passwd=@Socks5 Auth passwd"\
+                  "--master=@Socks5 Atuth IP" \
+                  "--help,-h@print help info" )
+        printf "Usage: %s [OPTIONS]\n\nOptions:\n\n" $0
+          
+        for option in "${options[@]}";do
+          printf "  %-20s%s\n" "$( echo ${option} | sed 's/@.*//g')"  "$( echo ${option} | sed 's/.*@//g')"
+        done
+        echo -e "\n"
+        exit 1
+      ;;
+      *)
+          exit 1
+      ;;
+        
+    esac
+done
+
+###########################################################################################################################
 
 genconfig(){
-  # CONFIGFILE $IP $PORT $N
+  # CONFIGFILE $IP $PORT $INTERFACE
   CONFIGFILE=$1
   IP=$2
   PORT=$3
-  TAG=$4
-  cat >$CONFIGFILE<<EOF
-#### Danted Sock5 Config For: ${TAG} ${IP} #####
-internal: ${IP} port = ${PORT}
+  INTERFACE=$4
+  cat >> $CONFIGFILE <<EOF
+# interface ${INTERFACE}
+internal: ${IP}  port = ${PORT}
 external: ${IP}
-#socksmethod: none
-#socksmethod: username
-socksmethod: pam.username none
-user.notprivileged: sock
-logoutput: /var/log/danted_${TAG}.log
 
-##### Master Config ##############
-client pass {
-from: ${MASTER_IP} to: 0.0.0.0/0
-socksmethod: none
-log: connect disconnect
-}
-#################################
-client pass {
-from: 0.0.0.0/0 to: 0.0.0.0/0
-socksmethod: pam.username
-log: connect disconnect
-}
-socks pass {
-from: 0.0.0.0/0 to: 0.0.0.0/0 port gt 1023
-command: bind
-log: connect disconnect
-}
-socks pass {
-from: 0.0.0.0/0 to: 0.0.0.0/0
-command: connect udpassociate
-log: connect disconnect
-}
-socks pass {
-from: 0.0.0.0/0 to: 0.0.0.0/0
-command: bindreply udpreply
-log: connect error
-}
-socks block {
-from: 0.0.0.0/0 to: 0.0.0.0/0
-log: connect error
-}
 EOF
 }
 
@@ -66,31 +79,59 @@ path=$(cd `dirname $0`;pwd )
 
 useradd sock -s /bin/false > /dev/null 2>&1
 #echo sock:sock | chpasswd
-rm -rf /etc/danted
-mkdir -p /etc/danted/conf
+mkdir -p /etc/danted
+CONFIGFILE="/etc/danted/sockd.conf"
+cp /dev/null ${CONFIGFILE}
 
-Getserverip_n=$(ifconfig | grep 'inet addr' | grep -Ev 'inet addr:127.0.0|inet addr:192.168.0|inet addr:10.0.0' | sed -n 's/.*inet addr:\([^ ]*\) .*/\1/p' | wc -l)
-Getserverip=$(ifconfig | grep 'inet addr' | grep -Ev 'inet addr:127.0.0|inet addr:192.168.0|inet addr:10.0.0' | sed -n 's/.*inet addr:\([^ ]*\) .*/\1/p')
+echo "$SERVERIP" | while read theip;do
+  echo "Adding Interface :${theip}"
+  port=$DEFAULT_PORT
+  intface=$(ifconfig | grep "$theip" -1 | sed -n 1p | awk '{print $1}' | sed 's/:/-/g')
+    
+  if [ -z "$intface" ];then
+      defaultip=$(echo "${Getserverip}" | head -1)
+      intface=$(ifconfig | grep "$defaultip" -1 | sed -n 1p | awk '{print $1}' | sed 's/:/-/g' )
+      echo "Input error. use default ip: ${defaultip}"
+      genconfig $CONFIGFILE $defaultip $port $intface
+      break
+  fi
+  genconfig $CONFIGFILE $theip $port $intface
+done
 
-serverip=$Getserverip
-( [ -z "$serverip" ] || [ -z "$(echo $Getserverip | grep "$serverip" )" ] ) && echo 'Get IP address Error.Try again OR report bug.' && exit
-[ $Getserverip_n -gt 1 ] && echo "$Getserverip" && read -p  "Server IP > 1, Please Input Taget Danted Server IP OR Enter to config all " serverip
+cat >> $CONFIGFILE <<EOF
+external.rotation: same-same
+method: pam none
+clientmethod: none
+user.privileged: root
+user.notprivileged: sock
+logoutput: /var/log/danted.log
 
-if [ -z "$serverip" ];then
-   echo "$Getserverip" | while read theip;do
-      port=$DEFAULT_PORT
-      intface=$(ifconfig | grep "$theip" -1 | sed -n 1p | awk '{print $1}' | sed 's/:/-/g')
-      configfile="/etc/danted/conf/sockd_${intface}.conf"
-   	  genconfig $configfile $theip $port $intface
-   	  i=$((i+1))
-   done
-else
-      port=$DEFAULT_PORT
-      intface=$(ifconfig | grep "$serverip" -1 | sed -n 1p | awk '{print $1}' | sed 's/:/-/g' )
-      configfile="/etc/danted/conf/sockd_${intface}.conf"
-   	  genconfig $configfile $serverip $port $intface
-fi
+client pass {
+        from: 0.0.0.0/0  to: 0.0.0.0/0
+}
+client block {
+        from: 0.0.0.0/0 to: 0.0.0.0/0
+}       
 
+#------------ Master ------------------
+pass {
+        from: ${MASTER_IP} to: 0.0.0.0/0
+        method: none
+}       
+#-------------------------------------
+pass {
+        from: 0.0.0.0/0 to: 0.0.0.0/0
+        protocol: tcp udp
+        method: pam
+        log: connect disconnect
+}
+block {
+        from: 0.0.0.0/0 to: 0.0.0.0/0
+        log: connect error
+}
+EOF
+
+rm /tmp/danted -rf
 mkdir -p /tmp/danted
 cd /tmp/danted
 
@@ -110,10 +151,10 @@ cd ../
 fi
 
 if [ ! -s /etc/danted/sbin/sockd ] || [ -z "$(/etc/danted/sbin/sockd -v | grep "$VERSION")" ];then
-wget http://www.inet.no/dante/files/dante-1.4.0.tar.gz
+wget http://www.inet.no/dante/files/dante-1.3.2.tar.gz
 tar zxvf dante*
 cd dante*
-./configure --with-sockd-conf=${configfile} --prefix=/etc/danted
+./configure --with-sockd-conf=${CONFIGFILE} --prefix=/etc/danted
 make && make install
 cd ../../
 fi
@@ -121,10 +162,10 @@ fi
 rm /tmp/danted -rf
 
 cat > /etc/pam.d/sockd  <<EOF
-auth required pam_pwdfile.so pwdfile /etc/danted/socks.passwd
+auth required pam_pwdfile.so pwdfile /etc/danted/sockd.passwd
 account required pam_permit.so
 EOF
-/usr/bin/htpasswd -c -d -b /etc/danted/socks.passwd ${DEFAULT_USER} ${DEFAULT_PAWD}
+/usr/bin/htpasswd -c -d -b /etc/danted/sockd.passwd ${DEFAULT_USER} ${DEFAULT_PAWD}
 
 cat > /etc/init.d/danted <<'EOF'
 #! /bin/bash
@@ -142,127 +183,147 @@ cat > /etc/init.d/danted <<'EOF'
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/etc/danted/sbin/sockd
+VERSION="1.3.2"
 DESC="Dante SOCKS daemon"
-CONFIGDIR=/etc/danted/conf
+PIDFILE="/var/run/sockd.pid"
+CONFIGFILE=/etc/danted/sockd.conf
 
 test -f $DAEMON || exit 0
+test -f $CONFIGFILE || exit 0
 
 set -e
+#Color Variable
+CSI=$(echo -e "\033[")
+CEND="${CSI}0m"
+CDGREEN="${CSI}32m"
+CRED="${CSI}1;31m"
+CGREEN="${CSI}1;32m"
+CYELLOW="${CSI}1;33m"
+CBLUE="${CSI}1;34m"
+CMAGENTA="${CSI}1;35m"
+CCYAN="${CSI}1;36m"
+#Color Variable
 
 start_daemon_all(){
-    ls ${CONFIGDIR}/*.conf | while read configed;do
-    	NAME=$(echo $configed | sed 's/.*\/\(.*\)\.conf/\1/g')
-    	PIDFILE=/var/run/$NAME.pid
-    	LOGFILE=$(cat $configed | grep '^logoutput' | sed 's/.*logoutput: \(.*\).*/\1/g')
+      LOGFILE=$(grep '^logoutput' ${CONFIGFILE} | sed 's/.*logoutput: \(.*\).*/\1/g')
 
-    	echo -n "  config $NAME "
-    	
-    	if [ -s $PIDFILE ] && [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ];then
-    	     echo -e "\033[1;31m [ Runing;Failed ] \033[0m" 
-    	     continue
-    	fi
+      if [ -s $PIDFILE ] && [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ];then
+           printf "%s\n" "${CRED} Danted Server [ Runing;Failed ] ${CEND}" 
+           return 0
+      fi
 
-        echo >$PIDFILE
-        cp /dev/null $LOGFILE
+      cp /dev/null $PIDFILE
+      cp /dev/null $LOGFILE
 
-        if ! egrep -cve '^ *(#|$)' \
-	       -e '^(logoutput|user\.((not)?privileged|libwrap)):' $configed > /dev/null
-	    then
-		   echo -e "\033[1;31m [ not configured ] \033[0m"
-		   continue
-	    fi
-        if [ $(ls /etc/danted/conf/*.conf | wc -l) -eq 1 ];then
-            start-stop-daemon --start --quiet --background --oknodo --pidfile $PIDFILE \
-                --exec $DAEMON -- -D -p $PIDFILE -N 1 -n
-        else
-            start-stop-daemon --start --quiet --background --oknodo --pidfile $PIDFILE \
-		--exec $DAEMON -- -f $configed -p $PIDFILE -N 1 -n
-        fi	
-	( [ -s $PIDFILE ] && echo -e "\033[32m [ Runing ] \033[0m" ) || echo -e "\033[1;31m  [ Faild ] \033[0m"
-    done
+      if ! egrep -cve '^ *(#|$)' \
+         -e '^(logoutput|user\.((not)?privileged|libwrap)):' $CONFIGFILE > /dev/null
+      then
+          printf "%s\n" "${CRED} Danted Server [ not configured ] ${CEND}"
+          return 0
+      fi
+
+      start-stop-daemon --start --quiet --background --oknodo --pidfile $PIDFILE \
+                --exec $DAEMON -- -f ${CONFIGFILE} -D -p $PIDFILE -N 1 -n
+      sleep 2
+      
+      if [ -s $PIDFILE ];then
+          printf "%s\n" "${CGREEN} Danted Server [ Runing ] ${CEND}"
+      else
+          printf "%s\n" "${CRED} Danted Server [ Start Faild ] ${CEND}"
+      fi
 }
 stop_daemon_all(){
-    ls ${CONFIGDIR}/*.conf | while read configed;do
-    	NAME=$(echo $configed | sed 's/.*\/\(.*\)\.conf/\1/g')
-    	PIDFILE=/var/run/$NAME.pid
-        echo -n "  config $NAME "
-        if [ ! -s $PIDFILE ];then 
-          echo -e "\033[1;31m  [ PID.LOST;Unable ] \033[0m" 
-          continue
-        fi
+    if [ ! -s $PIDFILE ];then 
+          printf "%s\n" "${CRED} Danted Server [ PID.LOST;Unable ] ${CEND}"
+    fi
         start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE \
-		--exec $DAEMON -- -f $configed -p $PIDFILE
-		( [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ] && \
-			echo -e "\033[1;31m  [ Failed ] \033[0m" ) || echo -e "\033[32m [ Stop ] \033[0m"
-    done
+    --exec $DAEMON -- -f ${CONFIGFILE} -p $PIDFILE -N 1 -n
+
+    ( [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ] && \
+      printf "%s\n" "${CRED} Danted Server [ Stop Failed ] ${CEND}" ) || \
+      printf "%s\n" "${CYELLOW} Danted Server [ Stop Done ] ${CEND}"
 }
+force_stop_daemon(){
+    ps -ef | grep 'sockd' | grep -v 'grep' | awk '{print $2}' | while read pid; do kill -9 $pid > /dev/null 2>&1 ;done
+}
+
 reload_daemon_all(){
-    ls ${CONFIGDIR}/*.conf | while read configed;do
-    	NAME=$(echo $configed | sed 's/.*\/\(.*\)\.conf/\1/g')
-    	PIDFILE=/var/run/$NAME.pid
-        echo -n "  config $NAME "
-        if [ -s $PIDFILE ];then
-        	if [ -z "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ];then
-        	  echo -e "\033[1;31m [ PID.DIE;Unable ] \033[0m"  
-        	  continue
-        	fi
-       else
-            echo -e "\033[1;31m [ PID.LOST;Unable ] \033[0m" 
-            continue
-        fi
+    if [ -s $PIDFILE ];then
+      if [ -z "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ];then
+        printf "%s\n" "${CRED} Danted Server [ PID.DIE;Unable ] ${CEND}"  
+        continue
+      fi
+   else
+        printf "%s\n" "${CRED} Danted Server [ PID.LOST;Unable ] ${CEND}" 
+        continue
+    fi
         start-stop-daemon --stop --signal 1 --quiet --oknodo --pidfile $PIDFILE \
-		--exec $DAEMON -- -f $configed -p $PIDFILE
-		( [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ] \
-			&& echo -e "\033[32m [ Runing ] \033[0m" ) || echo -e "\033[1;31m [ Failed ] \033[0m"
-    done
+    --exec $DAEMON -- -f $CONFIGFILE -p $PIDFILE -N 1 -n
+
+    ( [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ] \
+      && printf "%s\n" "${CGREEN} Danted Server [ Runing ] ${CEND}" ) \
+      || printf "%s\n" "${CRED} Danted Server [ Failed ] ${CEND}"
+
 }
 status_daemon_all(){
-	ls ${CONFIGDIR}/*.conf | while read configed;do
-		NAME=$(echo $configed | sed 's/.*\/\(.*\)\.conf/\1/g')
-    	PIDFILE=/var/run/$NAME.pid
-        echo -n "  config $NAME " $(cat $configed | grep '^internal' | sed 's/internal:\(.*\)port.*=\(.*\)/\1:\2/g' | sed 's/ //g')"  "
-        if [ ! -s $PIDFILE ];then
-        	echo -e "\033[1;31m [ Stop ] \033[0m"
-        	continue
-        fi
-        ( [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ] \
-        	&& echo -e "\033[32m [ Runing ] \033[0m" ) || echo -e "\033[1;31m [ PID.DIE;Unable ] \033[0m"
-    done
-    echo ">>>>>>>>>>>>>>>>>>>>>>>>"
-    echo "  Active User:" $(cat /etc/danted/socks.passwd | while read line;do echo $line| sed 's/\(.*\):.*/\1/';done) 
+    printf "%s\n" "${CCYAN}+-----------------------------------------+${CEND}"
+
+    if [ ! -s $PIDFILE ];then
+      printf "%s\n" "${CRED} Danted Server [ Stop ] ${CEND}"
+    else
+      ( [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ] \
+      && printf "%s\n" "${CGREEN} Danted Server [ Runing ] ${CEND}" ) \
+      || printf "%s\n" "${CRED} Danted Server [ PID.DIE;Running ] ${CEND}"
+    fi
+
+    printf "%s\n" "${CCYAN}+-----------------------------------------+${CEND}"
+    printf "%-30s%s\n"  "${CGREEN} Dante Version:${CEND}"  "$CMAGENTA ${VERSION}${CEND}"
+    printf "%-30s\n"  "${CGREEN} Socks5 Info:${CEND}"
+
+    grep '^internal:' ${CONFIGFILE} | \
+    sed 's/internal:[[:space:]]*\([0-9.]*\).*port[[:space:]]*=[[:space:]]*\(.*\)/\1:\2/g' | \
+        while read proxy;do
+          printf "%20s%s\n" "" "${CMAGENTA}${proxy}${CEND}"
+        done
+    
+    SOCKD_USER=$(cat /etc/danted/sockd.passwd | while read line;do echo $line| sed 's/\(.*\):.*/\1/';done | tr "\n" " ")
+    printf "%-30s%s\n" "${CGREEN} Socks5 User:${CEND}"  "$CMAGENTA ${SOCKD_USER}${CEND}"
+    printf "%s\n" "${CCYAN}+_________________________________________+$CEND"
 }
 add_user(){
-	User=$1
-	Passwd=$2
-	( [ -z "$User" ] || [ -z "$Passwd" ] ) && echo " Error: User or password can't be blank" && return 0 
-    /usr/bin/htpasswd -d -b /etc/danted/socks.passwd ${User} ${Passwd}
+    User=$1
+    Passwd=$2
+    ( [ -z "$User" ] || [ -z "$Passwd" ] ) && echo " Error: User or password can't be blank" && return 0 
+    /usr/bin/htpasswd -d -b /etc/danted/sockd.passwd ${User} ${Passwd}
 }
 del_uer(){
-   	User=$1
-	[ -z "$User" ] && echo " Error: User Name can't be blank" && return 0 
-    /usr/bin/htpasswd -D /etc/danted/socks.passwd ${User}
+    User=$1
+    [ -z "$User" ] && echo " Error: User Name can't be blank" && return 0 
+    /usr/bin/htpasswd -D /etc/danted/sockd.passwd ${User}
 }
+
 case "$1" in
   start)
-	echo "Starting $DESC: "
-	start_daemon_all
-	;;
+    echo "Starting $DESC: "
+    start_daemon_all
+  ;;
   stop)
-	echo "Stopping $DESC: "
-	stop_daemon_all
-	;;
+    echo "Stopping $DESC: "
+    stop_daemon_all
+  ;;
   reload)
-	echo "Reloading $DESC configuration files."
-	reload_daemon_all
+    echo "Reloading $DESC configuration files."
+    reload_daemon_all
   ;;
   restart)
-	echo "Restarting $DESC: "
-	stop_daemon_all
-	sleep 1
-	start_daemon_all
-	;;
+    echo "Restarting $DESC: "
+    stop_daemon_all
+    force_stop_daemon
+    sleep 1
+    start_daemon_all
+  ;;
   status)
-    echo "Curent Status Of $DESC: "
+    clear
     status_daemon_all
     ;;
   add)
@@ -274,10 +335,10 @@ case "$1" in
     del_user "$2"
     ;;
   *)
-	N=/etc/init.d/danted
-	echo "Usage: $N {start|stop|restart|status|add|del}" >&2
-	exit 1
-	;;
+  N=/etc/init.d/danted
+  echo "Usage: $N {start|stop|restart|status|add|del}" >&2
+  exit 1
+  ;;
 esac
 
 exit 0
@@ -285,6 +346,7 @@ EOF
 chmod +x /etc/init.d/danted
 [ -n "$(grep CentOS /etc/issue)" ]  && chkconfig --add danted
 [ -n "$(grep -E 'Debian|Ubuntu' /etc/issue)" ] && update-rc.d danted defaults
+rm /usr/bin/danted -f
 ln -s /etc/danted/sbin/sockd /usr/bin/danted
 service danted restart
 clear
@@ -309,10 +371,10 @@ if [ -n "$(netstat -atn | grep "$DEFAULT_PORT")" ];then
 ${CCYAN}+-----------------------------------------+$CEND
 ${CGREEN} Dante Socks5 Install Done. $CEND
 ${CCYAN}+-----------------------------------------+$CEND
-${CGREEN} Dante Version:       $CMAGENTA 1.4.0$CEND
+${CGREEN} Dante Version:       $CMAGENTA ${VERSION}$CEND
 ${CGREEN} Socks5 Info:         $CMAGENTA$CEND
 EOF
- echo "${Getserverip}" | while read theip;do
+ echo "${SERVERIP}" | while read theip;do
     echo "${CGREEN}                      $CMAGENTA ${theip}:${DEFAULT_PORT}$CEND"
  done
  cat <<EOF
