@@ -17,7 +17,7 @@
 <li>4. sock5 运行状态查看,系统启动后自动加载。</li>
 <li>5. <b>完美支持多访问进出口（多IP的环境，支持 使用IP-1，访问网站IP查询为IP-1）。</b></li>
 <li>6. 认证方式可选： 无用户名密码，系统用户名密码，Pam用户名密码</li>
-<li>7. 完美支持Centos/Debian,自动识别系统进行安装配置。</li>
+<li>7. 完美支持Centos/Debian,自动识别系统进行安装配置。[注意，经反馈，Centos 5 无法使用。]</li>
 <li>8. 自定义对连接客户端认证方式，支持白名单即支持某些IP/IP段无需认证即可连接。</li>
 </ul>
 <h3>******已解决问题</h3>
@@ -61,9 +61,9 @@
 <li>重启Danted 进程 service danted restart </li>
 </ol>
 <li> 3. 如需删除danted，请参考以下命令删除程序文件</li>
-<code>
+
     service danted stop
     rm -rf /etc/danted/
     rm -f /etc/init.d/danted
-</code>
+
 </ul>
