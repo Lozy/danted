@@ -62,8 +62,8 @@
 </ol>
 <li> 3. 如需删除danted，请参考以下命令删除程序文件</li>
 
-    service danted stop
-    rm -rf /etc/danted/
-    rm -f /etc/init.d/danted
+<p><code>service danted stop</code></p>
+<p><code>rm -rf /etc/danted/</code></p>
+<p><code>rm -f /etc/init.d/danted</code></p>
 
 </ul>
