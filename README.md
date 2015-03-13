@@ -53,12 +53,17 @@
 </ul>
 <h3>******使用注意事项</h3>
 <ul>
-<li> 1. 绝大部分浏览器（除了Opera）都不支持带密码认证的Socks5，所以使用电脑需要安装proxifier/proxycap 等软件做验证处理。<、li> 
-<li> 2. 如果是固定IP/Ip 段 可以修改配置文件，设置白名单访问。
+<li> 1. 绝大部分浏览器（除了Opera）都不支持带密码认证的Socks5，所以使用电脑需要安装proxifier/proxycap 等软件做验证处理。</li> 
+<li> 2. 如果是固定IP/Ip 段 可以修改配置文件，设置白名单访问。</li>
 <ol>
 <li>进入 /etc/danted/ 找到配置文件</li>
 <li>修改 第一个pass {} 模块下的 from: Master_IP/32 to: 0.0.0.0/0 . 把 Master_IP/32 修改为需要使用代理的Ip段/IP地址 如 114.114.114.0/24 或者 5.5.5.5/32 . 多个访问源，请复制多个 client pass {} 模块</li>
-</ol>
-</li>
 <li>重启Danted 进程 service danted restart </li>
+</ol>
+<li> 3. 如需删除danted，请参考以下命令删除程序文件</li>
+<code>
+    service danted stop
+    rm -rf /etc/danted/
+    rm -f /etc/init.d/danted
+</code>
 </ul>
