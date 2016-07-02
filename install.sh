@@ -1,9 +1,12 @@
 #!/bin/bash
+service danted stop > /dev/null 2>&1
+rm /etc/danted -rf 
+
 VERSION="v1.3.2"
-DEFAULT_PORT="62015"
+DEFAULT_PORT="2016"
 DEFAULT_USER="danted"
 DEFAULT_PAWD="danted"
-MASTER_IP="buyvm.info"
+MASTER_IP="ip.baidu.com"
 SERVERIP=$(ifconfig | grep 'inet addr' | grep -Ev 'inet addr:127.0.0|inet addr:192.168.0|inet addr:10.0.0' | sed -n 's/.*inet addr:\([^ ]*\) .*/\1/p')
 ###############################################------------Menu()---------#####################################################
 for _PARAMETER in $*
@@ -73,9 +76,9 @@ path=$(cd `dirname $0`;pwd )
   && ( yum install gcc g++ make vim pam-devel tcp_wrappers-devel unzip httpd-tools -y ) ) \
   || ( [ -n "$(grep -E 'Debian|Ubuntu' /etc/issue)" ] \
   && ( apt-get update ) \
-  && ( apt-get purge dante-server -y ) \
   && ( apt-get install gcc g++ make vim libpam-dev libwrap0-dev unzip apache2-utils -y ) )\
   || exit 0
+#&& ( apt-get purge dante-server -y ) \
 
 useradd sock -s /bin/false > /dev/null 2>&1
 #echo sock:sock | chpasswd
@@ -208,7 +211,7 @@ start_daemon_all(){
       LOGFILE=$(grep '^logoutput' ${CONFIGFILE} | sed 's/.*logoutput: \(.*\).*/\1/g')
 
       if [ -s $PIDFILE ] && [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ];then
-           printf "%s\n" "${CRED} Danted Server [ Runing;Failed ] ${CEND}" 
+           echo -e "${CRED}Danted Server [ Runing;Failed ] ${CEND}" 
            return 0
       fi
 
@@ -218,7 +221,7 @@ start_daemon_all(){
       if ! egrep -cve '^ *(#|$)' \
          -e '^(logoutput|user\.((not)?privileged|libwrap)):' $CONFIGFILE > /dev/null
       then
-          printf "%s\n" "${CRED} Danted Server [ not configured ] ${CEND}"
+          echo -e "${CRED}Danted Server [ not configured ] ${CEND}"
           return 0
       fi
 
@@ -227,21 +230,21 @@ start_daemon_all(){
       sleep 2
       
       if [ -s $PIDFILE ];then
-          printf "%s\n" "${CGREEN} Danted Server [ Runing ] ${CEND}"
+          echo -e "${CGREEN}Danted Server [ Runing ] ${CEND}"
       else
-          printf "%s\n" "${CRED} Danted Server [ Start Faild ] ${CEND}"
+          echo -e "${CRED}Danted Server [ Start Faild ] ${CEND}"
       fi
 }
 stop_daemon_all(){
     if [ ! -s $PIDFILE ];then 
-          printf "%s\n" "${CRED} Danted Server [ PID.LOST;Unable ] ${CEND}"
+          echo -e "${CRED}Danted Server [ PID.LOST;Unable ] ${CEND}"
     fi
         start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE \
     --exec $DAEMON -- -f ${CONFIGFILE} -p $PIDFILE -N 1 -n
 
     ( [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ] && \
-      printf "%s\n" "${CRED} Danted Server [ Stop Failed ] ${CEND}" ) || \
-      printf "%s\n" "${CYELLOW} Danted Server [ Stop Done ] ${CEND}"
+      echo -e "${CRED}Danted Server [ Stop Failed ] ${CEND}" ) || \
+      echo -e "${CYELLOW}Danted Server [ Stop Done ] ${CEND}"
 }
 force_stop_daemon(){
     ps -ef | grep 'sockd' | grep -v 'grep' | awk '{print $2}' | while read pid; do kill -9 $pid > /dev/null 2>&1 ;done
@@ -250,23 +253,23 @@ force_stop_daemon(){
 reload_daemon_all(){
     if [ -s $PIDFILE ];then
       if [ -z "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ];then
-        printf "%s\n" "${CRED} Danted Server [ PID.DIE;Unable ] ${CEND}"  
+        echo -e "${CRED}Danted Server [ PID.DIE;Unable ] ${CEND}"  
         continue
       fi
    else
-        printf "%s\n" "${CRED} Danted Server [ PID.LOST;Unable ] ${CEND}" 
+        echo -e "${CRED}Danted Server [ PID.LOST;Unable ] ${CEND}" 
         continue
     fi
         start-stop-daemon --stop --signal 1 --quiet --oknodo --pidfile $PIDFILE \
     --exec $DAEMON -- -f $CONFIGFILE -p $PIDFILE -N 1 -n
 
     ( [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ] \
-      && printf "%s\n" "${CGREEN} Danted Server [ Runing ] ${CEND}" ) \
-      || printf "%s\n" "${CRED} Danted Server [ Failed ] ${CEND}"
+      && echo -e "${CGREEN}Danted Server [ Runing ] ${CEND}" ) \
+      || echo -e "${CRED}Danted Server [ Failed ] ${CEND}"
 
 }
 status_daemon_all(){
-    printf "%s\n" "${CCYAN}+-----------------------------------------+${CEND}"
+    printf "%s\n" "${CCYAN}+-----------------------------------------+$CEND"
 
     if [ ! -s $PIDFILE ];then
       printf "%s\n" "${CRED} Danted Server [ Stop ] ${CEND}"
@@ -276,7 +279,7 @@ status_daemon_all(){
       || printf "%s\n" "${CRED} Danted Server [ PID.DIE;Running ] ${CEND}"
     fi
 
-    printf "%s\n" "${CCYAN}+-----------------------------------------+${CEND}"
+    printf "%s\n" "${CCYAN}+-----------------------------------------+$CEND"
     printf "%-30s%s\n"  "${CGREEN} Dante Version:${CEND}"  "$CMAGENTA ${VERSION}${CEND}"
     printf "%-30s\n"  "${CGREEN} Socks5 Info:${CEND}"
 
@@ -286,7 +289,7 @@ status_daemon_all(){
           printf "%20s%s\n" "" "${CMAGENTA}${proxy}${CEND}"
         done
     
-    SOCKD_USER=$(cat /etc/danted/sockd.passwd | while read line;do echo $line| sed 's/\(.*\):.*/\1/';done | tr "\n" " ")
+    SOCKD_USER=$(cat /etc/danted/sockd.passwd | while read line;do echo $line| sed 's/\(.*\):.*/\1/';done)
     printf "%-30s%s\n" "${CGREEN} Socks5 User:${CEND}"  "$CMAGENTA ${SOCKD_USER}${CEND}"
     printf "%s\n" "${CCYAN}+_________________________________________+$CEND"
 }
