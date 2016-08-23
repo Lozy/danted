@@ -7,7 +7,7 @@ DEFAULT_PORT="2016"
 DEFAULT_USER="danted"
 DEFAULT_PAWD="danted"
 MASTER_IP="ip.baidu.com"
-SERVERIP=$(ifconfig | grep 'inet addr' | grep -Ev 'inet addr:127.0.0|inet addr:192.168.0|inet addr:10.0.0' | sed -n 's/.*inet addr:\([^ ]*\) .*/\1/p')
+SERVERIP=$(/sbin/ifconfig | grep 'inet addr' | grep -Ev 'inet addr:127.0.0|inet addr:192.168.0|inet addr:10.0.0' | sed -n 's/.*inet addr:\([^ ]*\) .*/\1/p')
 ###############################################------------Menu()---------#####################################################
 for _PARAMETER in $*
 do
@@ -101,8 +101,10 @@ echo "$SERVERIP" | while read theip;do
   genconfig $CONFIGFILE $theip $port $intface
 done
 
+# set same-same when external > 1
+[ $(echo "$SERVERIP" | wc -l ) -gt 1 ] && echo "external.rotation: same-same" >> $CONFIGFILE
+
 cat >> $CONFIGFILE <<EOF
-external.rotation: same-same
 method: pam none
 clientmethod: none
 user.privileged: root
