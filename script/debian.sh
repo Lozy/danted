@@ -24,6 +24,12 @@ DEFAULT_IPADDR=$(ip addr | grep 'inet ' | grep -Ev 'inet 127|inet 192\.168|inet 
 RUN_PATH=$(cd `dirname $0`;pwd )
 
 ##################------------Func()---------#####################################
+remove_install(){
+    [ -s "${BIN_SCRIPT}" ] && ${BIN_SCRIPT} stop > /dev/null 2>&1
+    [ -f "${BIN_SCRIPT}" ] && rm "${BIN_SCRIPT}"
+    [ -n "$BIN_DIR" ] && rm -r "$BIN_DIR"
+}
+
 detect_install(){
     if [ -s "${BIN_PATH}" ];then
         echo "dante socks5 already install"
@@ -173,13 +179,14 @@ do
         INSTALL_FROM="package"
       ;;
       --update-whitelist|-u)
-        install_ctl
         gen_config_only="True"
       ;;
       --force-update|-f)
-        [ -s "${BIN_SCRIPT}" ] && ${BIN_SCRIPT} stop > /dev/null 2>&1
-        [ -f "${BIN_SCRIPT}" ] && rm "${BIN_SCRIPT}"
-        [ -n "$BIN_DIR" ] && rm -r "$BIN_DIR"
+        remove_install
+      ;;
+      --uninstall)
+        remove_install
+        exit 0
       ;;
       --help|-h)
         clear
@@ -222,7 +229,8 @@ generate_config "${DEFAULT_IPADDR}" "${WHITE_LIST}"
 
 download_file "script/sockctl" "${BIN_SCRIPT}" "execute"
 
-[ -n "$(detect_install)" ] && echo "dante sockd already install." && exit 1
+[ -n "$(detect_install)" ] && echo "dante sockd already install." && exit 1 || rm /etc/danted
+
 [ -n "$COLOR_PATH" ] && [ ! -s "$COLOR_PATH" ] && download_file "script/color" $COLOR_PATH && . $COLOR_PATH
 
 ########################################## DEBIAN 8 #####################################################################
