@@ -190,7 +190,7 @@ case "$1" in
     ;;
   *)
   N=/etc/init.d/sockctl
-  echo "Usage: $N {start|stop|reload|status|adduser|deluser||tail}" >&2
+  echo " Usage: $N {start|stop|reload|status|adduser|deluser|tail}" >&2
   exit 1
   ;;
 esac

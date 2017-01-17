@@ -237,8 +237,7 @@ download_file "script/sockctl" "${BIN_SCRIPT}" "execute"
 apt-get update
 apt-get install gcc g++ make vim libpam-dev libwrap0-dev unzip apache2-utils -y
 
-mkdir -p /tmp/danted && rm /tmp/danted/* -rf
-cd /tmp/danted
+mkdir -p /tmp/danted && rm /tmp/danted/* -rf && cd /tmp/danted
 
 useradd sockd -s /bin/false > /dev/null 2>&1
 
@@ -262,7 +261,7 @@ if [ "$INSTALL_FROM" == "compile" ];then
     fi
 else
     download_file "source/${PACKAGE_NAME}" "${PACKAGE_NAME}"
-    [ -f "${PACKAGE_NAME}" ] && mkdir ${BIN_DIR} && dpkg -i ${PACKAGE_NAME}
+    [ -f "${PACKAGE_NAME}" ] && dpkg -i ${PACKAGE_NAME}
 fi
 
 cat > /etc/pam.d/sockd  <<EOF
@@ -313,6 +312,7 @@ else
     echo -e "\033[1;31m Dante Server Install Failed! \033[0m"
 fi
 
+echo ""
 ${BIN_SCRIPT} -h
 
 exit 0
