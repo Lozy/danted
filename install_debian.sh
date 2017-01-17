@@ -234,12 +234,9 @@ download_file "script/sockctl" "${BIN_SCRIPT}" "execute"
 [ -n "$COLOR_PATH" ] && [ ! -s "$COLOR_PATH" ] && download_file "script/color" $COLOR_PATH && . $COLOR_PATH
 
 ########################################## DEBIAN 8 #####################################################################
-apt-get update
-apt-get install gcc g++ make vim libpam-dev libwrap0-dev unzip apache2-utils -y
-
 mkdir -p /tmp/danted && rm /tmp/danted/* -rf && cd /tmp/danted
 
-useradd sockd -s /bin/false > /dev/null 2>&1
+id sockd > /dev/null 2>&1 || useradd sockd -s /bin/false
 
 #--# Check libpam-pwdfile
 if [ ! -s /lib/security/pam_pwdfile.so ];then
@@ -252,6 +249,9 @@ if [ ! -s /lib/security/pam_pwdfile.so ];then
 fi
 
 if [ "$INSTALL_FROM" == "compile" ];then
+    apt-get update
+    apt-get install gcc g++ make vim libpam-dev libwrap0-dev unzip apache2-utils -y
+
     download_file "source/dante-${VERSION}.tar.gz" "dante-${VERSION}.tar.gz"
 
     if [ -f "dante-${VERSION}.tar.gz" ];then
@@ -260,7 +260,7 @@ if [ "$INSTALL_FROM" == "compile" ];then
         make && make install
     fi
 else
-    download_file "source/${PACKAGE_NAME}" "${PACKAGE_NAME}"
+    download_file "package/${PACKAGE_NAME}" "${PACKAGE_NAME}"
     [ -f "${PACKAGE_NAME}" ] && dpkg -i ${PACKAGE_NAME}
 fi
 
