@@ -58,9 +58,11 @@ stop_daemon_all(){
     start-stop-daemon --stop --quiet --oknodo --pidfile $PID_FILE \
         --exec $DAEMON -- -f ${CONFIG_FILE} -p $PID_FILE -N ${Start_Process} ${Sockd_Opts}
 
-    [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PID_FILE)$" )" ] && \
-      echo -e "${CRED}Danted Server [ Stop Failed ] ${CEND}" || \
-      echo -e "${CYELLOW}Danted Server [ Stop Done ] ${CEND}"
+    if [ -s $PID_FILE ];then
+        [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PID_FILE)$" )" ] && \
+          echo -e "${CRED}Danted Server [ Stop Failed ] ${CEND}" || \
+          echo -e "${CYELLOW}Danted Server [ Stop Done ] ${CEND}"
+    fi
 }
 
 force_stop_daemon(){
