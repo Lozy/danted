@@ -1,5 +1,6 @@
 #!/bin/bash
 #
+# Provides:          sockd.info (Lozy)
 #
 
 VERSION="1.3.2"
@@ -62,8 +63,8 @@ generate_config_static(){
 method: pam none
 clientmethod: none
 user.privileged: root
-user.notprivileged: sock
-logoutput: /var/log/danted.log
+user.notprivileged: sockd
+logoutput: /var/log/sockd.log
 
 client pass {
         from: 0.0.0.0/0  to: 0.0.0.0/0
@@ -231,7 +232,7 @@ apt-get install gcc g++ make vim libpam-dev libwrap0-dev unzip apache2-utils -y
 mkdir -p /tmp/danted && rm /tmp/danted/* -rf
 cd /tmp/danted
 
-useradd sock -s /bin/false > /dev/null 2>&1
+useradd sockd -s /bin/false > /dev/null 2>&1
 
 #--# Check libpam-pwdfile
 if [ ! -s /lib/security/pam_pwdfile.so ];then

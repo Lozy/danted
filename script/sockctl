@@ -21,9 +21,9 @@ test -f CONFIG_FILE || exit 0
 [ -f /etc/default/sockd ] && . /etc/default/sockd
 [ -f /etc/default/color ] && . /etc/default/color
 
-start_daemon_all(){
-      LOGFILE=$(grep '^logoutput' ${CONFIG_FILE} | sed 's/.*logoutput: \(.*\).*/\1/g')
+LOGFILE=$(grep '^logoutput' ${CONFIG_FILE} | sed 's/.*logoutput: \(.*\).*/\1/g')
 
+start_daemon_all(){
       if [ -s $PID_FILE ] && [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PID_FILE)$" )" ];then
            echo -e "${CRED}Danted Server [ Running;Failed ] ${CEND}"
            return 0
@@ -139,8 +139,11 @@ del_uer(){
 }
 
 clear_log(){
-    LOG_FILE=$(grep '^logoutput' ${CONFIG_FILE} | sed 's/.*logoutput: \(.*\).*/\1/g')
     [ -f "${LOG_FILE}" ]  && cp /dev/null ${LOG_FILE}
+}
+
+tail_log(){
+    tail -f ${LOG_FILE}
 }
 
 case "$1" in
@@ -175,9 +178,13 @@ case "$1" in
     echo "Clearing User For $DESC: "
     del_user "$2"
     ;;
+  tail)
+     echo "==> ${CONFIG_FILE} <=="
+     tail_log
+    ;;
   *)
   N=/etc/init.d/sockctl
-  echo "Usage: $N {start|stop|reload|status|adduser|deluser}" >&2
+  echo "Usage: $N {start|stop|reload|status|adduser|deluser||tail}" >&2
   exit 1
   ;;
 esac
