@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#   wget -q --no-check-certificate https://script.nie.link/sockd.sh -O sockd.sh
 #
 
 VERSION="1.3.2"
