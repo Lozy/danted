@@ -112,9 +112,11 @@ status(){
                 printf "%20s%s\n" "" "${CMAGENTA}${proxy}${CEND}"
             done
 
-    SOCKD_USER=$(cat ${PASSWD_FILE} | while read line;do echo ${line} | sed 's/\(.*\):.*/\1/';done)
+    if [ -s ${PASSWD_FILE} ];then
+        SOCKD_USER=$(cat ${PASSWD_FILE} | while read line;do echo ${line} | sed 's/\(.*\):.*/\1/';done)
+        printf "%-30s%s\n" "${CGREEN} Socks5 User:${CEND}"  "$CMAGENTA ${SOCKD_USER}${CEND}"
+    fi
 
-    printf "%-30s%s\n" "${CGREEN} Socks5 User:${CEND}"  "$CMAGENTA ${SOCKD_USER}${CEND}"
     printf "%s\n" "${CCYAN}+_________________________________________+$CEND"
 }
 
