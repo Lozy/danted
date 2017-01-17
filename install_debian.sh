@@ -229,7 +229,7 @@ generate_config "${DEFAULT_IPADDR}" "${WHITE_LIST}"
 
 download_file "script/sockctl" "${BIN_SCRIPT}" "execute"
 
-[ -n "$(detect_install)" ] && echo "dante sockd already install." && exit 1 || rm /etc/danted
+[ -n "$(detect_install)" ] && echo "dante sockd already install." && exit 1
 
 [ -n "$COLOR_PATH" ] && [ ! -s "$COLOR_PATH" ] && download_file "script/color" $COLOR_PATH && . $COLOR_PATH
 
