@@ -1,0 +1,185 @@
+#! /bin/bash
+### BEGIN INIT INFO
+# Provides:          sockd.info (Lozy)
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Debian SOCKS (v5) proxy control (danted)
+### END INIT INFO
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON="/etc/danted/sbin/sockd"
+DESC="Dante SOCKS 5 daemon"
+PID_FILE="/var/run/sockd.pid"
+CONFIG_FILE="/etc/danted/sockd.conf"
+PASSWD_FILE="/etc/danted/sockd.passwd"
+
+test -f $DAEMON || exit 0
+test -f CONFIG_FILE || exit 0
+
+[ -f /etc/default/sockd ] && . /etc/default/sockd
+[ -f /etc/default/color ] && . /etc/default/color
+
+start_daemon_all(){
+      LOGFILE=$(grep '^logoutput' ${CONFIG_FILE} | sed 's/.*logoutput: \(.*\).*/\1/g')
+
+      if [ -s $PID_FILE ] && [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PID_FILE)$" )" ];then
+           echo -e "${CRED}Danted Server [ Running;Failed ] ${CEND}"
+           return 0
+      fi
+
+      if ! egrep -cve '^ *(#|$)' \
+         -e '^(logoutput|user\.((not)?privileged|libwrap)):' $CONFIG_FILE > /dev/null
+      then
+          echo -e "${CRED}Danted Server [ not configured ] ${CEND}"
+          return 0
+      fi
+
+      cp /dev/null $PID_FILE
+
+      start-stop-daemon --start --quiet --background --oknodo --pidfile $PID_FILE \
+                --exec $DAEMON -- -f ${CONFIG_FILE} -D -p $PID_FILE -N ${Start_Process} ${Sockd_Opts}
+
+      sleep 3
+      
+      if [ -s $PID_FILE ];then
+          echo -e "${CGREEN}Danted Server [ Running ] ${CEND}"
+      else
+          echo -e "${CRED}Danted Server [ Start Failed ] ${CEND}"
+      fi
+}
+
+stop_daemon_all(){
+    if [ ! -s $PID_FILE ];then 
+          echo -e "${CRED}Danted Server [ PID.LOST;Unable ] ${CEND}"
+    fi
+
+    start-stop-daemon --stop --quiet --oknodo --pidfile $PID_FILE \
+        --exec $DAEMON -- -f ${CONFIG_FILE} -p $PID_FILE -N ${Start_Process} ${Sockd_Opts}
+
+    [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PID_FILE)$" )" ] && \
+      echo -e "${CRED}Danted Server [ Stop Failed ] ${CEND}" || \
+      echo -e "${CYELLOW}Danted Server [ Stop Done ] ${CEND}"
+}
+
+force_stop_daemon(){
+    ps -ef | grep 'sockd' | grep -v 'grep' | awk '{print $2}' | \
+            while read pid; do kill -9 $pid > /dev/null 2>&1 ;done
+}
+
+reload_daemon_all(){
+    if [ -s $PID_FILE ];then
+      if [ -z "$( ps aux | awk '{print $2}'| grep "^$(cat $PID_FILE)$" )" ];then
+        echo -e "${CRED}Danted Server [ PID.DIE;Unable ] ${CEND}"
+        return 1
+      fi
+   else
+        echo -e "${CRED}Danted Server [ PID.LOST;Unable ] ${CEND}"
+        return 1
+   fi
+
+   start-stop-daemon --stop --signal 1 --quiet --oknodo --pidfile $PIDFILE \
+        --exec $DAEMON -- -f $CONFIGFILE -p $PIDFILE -N ${Start_Process} ${Sockd_Opts}
+
+
+   [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PIDFILE)$" )" ] \
+      && echo -e "${CGREEN}Danted Server [ Running ] ${CEND}" \
+      || echo -e "${CRED}Danted Server [ Failed ] ${CEND}"
+
+}
+
+status(){
+    VERSION=$([ -f "${DAEMON}" ] && ${DAEMON} -v)
+
+    printf "%s\n" "${CCYAN}+-----------------------------------------+$CEND"
+
+    if [ ! -s ${PID_FILE} ];then
+        printf "%s\n" "${CRED} Dante Server [ Stop ] ${CEND}"
+    else
+       ( [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat ${PID_FILE})$" )" ] \
+          && printf "%s\n" "${CGREEN} Dante Server [ Running ] ${CEND}" ) \
+          || printf "%s\n" "${CRED} Dante Server [ PID.DIE;Running ] ${CEND}"
+    fi
+
+    printf "%s\n" "${CCYAN}+-----------------------------------------+$CEND"
+    printf "%-30s%s\n"  "${CGREEN} Dante Version:${CEND}"  "$CMAGENTA ${VERSION}${CEND}"
+    printf "%-30s\n"  "${CGREEN} Socks5 Info:${CEND}"
+
+    grep '^internal:' ${CONFIG_FILE} | \
+        sed 's/internal:[[:space:]]*\([0-9.]*\).*port[[:space:]]*=[[:space:]]*\(.*\)/\1:\2/g' | \
+            while read proxy;do
+                printf "%20s%s\n" "" "${CMAGENTA}${proxy}${CEND}"
+            done
+
+    SOCKD_USER=$(cat ${PASSWD_FILE} | while read line;do echo ${line} | sed 's/\(.*\):.*/\1/';done)
+
+    printf "%-30s%s\n" "${CGREEN} Socks5 User:${CEND}"  "$CMAGENTA ${SOCKD_USER}${CEND}"
+    printf "%s\n" "${CCYAN}+_________________________________________+$CEND"
+}
+
+add_user(){
+    local User=$1
+    local Password=$2
+    ( [ -z "$User" ] || [ -z "$Password" ] ) && \
+        echo " Error: User or password can't be blank" && return 0
+
+    [ ! -f "${PASSWD_FILE}" ] && opt=" -c "
+
+    [ -f "/usr/bin/htpasswd" ] && /usr/bin/htpasswd ${opt} -d -b ${PASSWD_FILE} ${User} ${Password} || \
+        echo " Error: /usr/bin/htpasswd not exist. please install apache2-utils"
+
+}
+
+del_uer(){
+    local User=$1
+    [ -z "$User" ] && echo " Error: User Name can't be blank" && return 0
+    [ -f "/usr/bin/htpasswd" ]  && /usr/bin/htpasswd -D ${PASSWD_FILE} ${User} || \
+        echo " Error: /usr/bin/htpasswd not exist. please install apache2-utils"
+}
+
+clear_log(){
+    LOG_FILE=$(grep '^logoutput' ${CONFIG_FILE} | sed 's/.*logoutput: \(.*\).*/\1/g')
+    [ -f "${LOG_FILE}" ]  && cp /dev/null ${LOG_FILE}
+}
+
+case "$1" in
+  start)
+    echo "Starting $DESC: "
+    start_daemon_all
+  ;;
+  stop)
+    echo "Stopping $DESC: "
+    stop_daemon_all
+  ;;
+  reload)
+    echo "Reloading $DESC configuration files."
+    reload_daemon_all
+  ;;
+  restart)
+    echo "Restarting $DESC: "
+    stop_daemon_all
+    force_stop_daemon
+    sleep 1
+    start_daemon_all
+  ;;
+  status)
+    clear
+    status
+    ;;
+  adduser)
+    echo "Adding User For $DESC: "
+    add_user "$2" "$3"
+    ;;
+  deluser)
+    echo "Clearing User For $DESC: "
+    del_user "$2"
+    ;;
+  *)
+  N=/etc/init.d/sockctl
+  echo "Usage: $N {start|stop|reload|status|adduser|deluser}" >&2
+  exit 1
+  ;;
+esac
+
+exit 0
