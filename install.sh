@@ -17,7 +17,7 @@ if [ -s "/etc/os-release" ];then
         printf "Current OS: %s\n" "${os_name}"
         wget -qO- --no-check-certificate https://raw.github.com/Lozy/danted/master/install_centos.sh | \
             bash -s -- $@
-    else:
+    else
         printf "Current OS: %s is not support.\n" "${os_name}"
     fi
 else
