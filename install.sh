@@ -22,5 +22,6 @@ if [ -s "/etc/os-release" ];then
     fi
 else
     exit 1
+fi
 
 exit 0
