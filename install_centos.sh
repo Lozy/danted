@@ -17,7 +17,7 @@ COLOR_PATH="/etc/default/color"
 BIN_DIR="/etc/danted"
 BIN_PATH="/etc/danted/sbin/sockd"
 CONFIG_PATH="/etc/danted/sockd.conf"
-BIN_SCRIPT="/etc/init.d/sockctl"
+BIN_SCRIPT="/etc/init.d/sockd"
 
 DEFAULT_IPADDR=$(ip addr | grep 'inet ' | grep -Ev 'inet 127|inet 192\.168|inet 10\.' | \
             sed "s/[[:space:]]*inet \([0-9.]*\)\/.*/\1/")
@@ -229,7 +229,7 @@ generate_config "${DEFAULT_IPADDR}" "${WHITE_LIST}"
 
 [ -n "$gen_config_only" ]  && echo "===========>> update config" && cat ${CONFIG_PATH} && exit 0
 
-download_file "script/sockctl" "${BIN_SCRIPT}" "execute"
+download_file "script/sockd" "${BIN_SCRIPT}" "execute"
 
 [ -n "$(detect_install)" ] && echo "dante sockd already install." && exit 1
 
@@ -283,13 +283,13 @@ rm /usr/bin/sockd -f && ln -s /etc/danted/sbin/sockd /usr/bin/sockd
 ${BIN_SCRIPT} adduser "${DEFAULT_USER}" "${DEFAULT_PAWD}"
 
 if [ -n "$(ls -l /sbin/init | grep systemd)" ];then
-    download_file "script/sockctl.service" "/lib/systemd/system/sockctl.service"
-    systemctl enable sockctl
+    download_file "script/sockd.service" "/lib/systemd/system/sockd.service"
+    systemctl enable sockd
 else
-    chkconfig --add sockctl
+    chkconfig --add sockd
 fi
 
-service sockctl restart
+service sockd restart
 clear
 
 if [ -n "$(netstat -atn | grep "$DEFAULT_PORT")" ];then

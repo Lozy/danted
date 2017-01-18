@@ -190,7 +190,7 @@ case "$1" in
      tail_log "${LOG_FILE}"
     ;;
   *)
-  N=/etc/init.d/sockctl
+  N=/etc/init.d/sockd
   echo " Usage: $N {start|stop|reload|status|adduser|deluser|tail}" >&2
   exit 1
   ;;

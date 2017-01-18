@@ -17,7 +17,7 @@ COLOR_PATH="/etc/default/color"
 BIN_DIR="/etc/danted"
 BIN_PATH="/etc/danted/sbin/sockd"
 CONFIG_PATH="/etc/danted/sockd.conf"
-BIN_SCRIPT="/etc/init.d/sockctl"
+BIN_SCRIPT="/etc/init.d/sockd"
 
 DEFAULT_IPADDR=$(ip addr | grep 'inet ' | grep -Ev 'inet 127|inet 192\.168|inet 10\.' | \
             sed "s/[[:space:]]*inet \([0-9.]*\)\/.*/\1/")
@@ -181,7 +181,7 @@ do
       --update-whitelist|-u)
         gen_config_only="True"
       ;;
-      --force-update|-f)
+      --force-update|-f|force-update)
         remove_install
       ;;
       --uninstall)
@@ -195,8 +195,8 @@ do
                   "--port=[${DEFAULT_PORT}]@port for dante socks5 server" \
                   "--user=@Socks5 Auth user" \
                   "--passwd=@Socks5 Auth passwd"\
-                  "--master=@Socks5 Atuth IP" \
-                  "--whitelist=@Socks Auth whitelist" \
+                  "--whitelist=@Socks5 Auth IP list" \
+                  "--whitelist-url=@Socks Auth whitelist http online" \
                   "--from-package@Install package from Bin package" \
                   "--update-whitelist | -u @update white list" \
                   "--force-update | -f @force update sockd" \
@@ -227,7 +227,7 @@ generate_config "${DEFAULT_IPADDR}" "${WHITE_LIST}"
 
 [ -n "$gen_config_only" ]  && echo "===========>> update config" && cat ${CONFIG_PATH} && exit 0
 
-download_file "script/sockctl" "${BIN_SCRIPT}" "execute"
+download_file "script/sockd" "${BIN_SCRIPT}" "execute"
 
 [ -n "$(detect_install)" ] && echo "dante sockd already install." && exit 1
 
@@ -282,14 +282,14 @@ rm /usr/bin/sockd -f && ln -s /etc/danted/sbin/sockd /usr/bin/sockd
 ${BIN_SCRIPT} adduser "${DEFAULT_USER}" "${DEFAULT_PAWD}"
 
 if [ -n "$(ls -l /sbin/init | grep systemd)" ];then
-    download_file "script/sockctl.service" "/lib/systemd/system/sockctl.service"
-    systemctl enable sockctl
+    download_file "script/sockd.service" "/lib/systemd/system/sockd.service"
+    systemctl enable sockd
 else
-    update-rc.d sockctl defaults
+    update-rc.d sockd defaults
 fi
 
 clear
-service sockctl restart
+service sockd restart
 
 
 if [ -n "$(netstat -atn | grep "$DEFAULT_PORT")" ];then
