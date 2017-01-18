@@ -69,6 +69,8 @@ stop_daemon_all(){
 force_stop_daemon(){
     ps -ef | grep 'sockd' | grep -v 'grep' | awk '{print $2}' | \
             while read pid; do kill -9 $pid > /dev/null 2>&1 ;done
+
+    [ -f "$PID_FILE" ] && rm -f $PID_FILE
 }
 
 reload_daemon_all(){
@@ -161,6 +163,10 @@ case "$1" in
   stop)
     echo "Stopping $DESC: "
     stop_daemon_all
+  ;;
+  force-stop)
+    echo "Stopping $DESC: [Force]"
+    force_stop_daemon
   ;;
   reload)
     echo "Reloading $DESC configuration files."
