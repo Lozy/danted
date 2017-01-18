@@ -179,7 +179,7 @@ case "$1" in
     sleep 1
     start_daemon_all
   ;;
-  status)
+  status|state)
     clear
     status
     ;;
@@ -197,7 +197,7 @@ case "$1" in
     ;;
   *)
   N=/etc/init.d/sockd
-  echo " Usage: $N {start|stop|reload|status|adduser|deluser|tail}" >&2
+  echo " Usage: $N {start|stop|restart|reload|status|state|adduser|deluser|tail}" >&2
   exit 1
   ;;
 esac
