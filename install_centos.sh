@@ -199,7 +199,7 @@ do
                   "--passwd=@Socks5 Auth passwd"\
                   "--whitelist=@Socks5 Auth IP list" \
                   "--whitelist-url=@Socks Auth whitelist http online" \
-                  "--from-package@Install package from Bin package" \
+                  "--from-package | -p @Install package from Bin package" \
                   "--update-whitelist | -u @update white list" \
                   "--force-update | -f @force update sockd" \
                   "--help,-h@print help info" )

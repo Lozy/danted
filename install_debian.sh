@@ -197,7 +197,7 @@ do
                   "--passwd=@Socks5 Auth passwd"\
                   "--whitelist=@Socks5 Auth IP list" \
                   "--whitelist-url=@Socks Auth whitelist http online" \
-                  "--from-package@Install package from Bin package" \
+                  "--from-package | -p @Install package from Bin package" \
                   "--update-whitelist | -u @update white list" \
                   "--force-update | -f @force update sockd" \
                   "--help,-h@print help info" )
@@ -235,7 +235,7 @@ download_file "script/sockd" "${BIN_SCRIPT}" "execute"
 
 ########################################## DEBIAN 8 ####################################################################
 apt-get update
-apt-get install unzip apache2-utils -y
+apt-get install unzip apache2-utils gcc g++ make libpam-dev libwrap0-dev -y
 
 mkdir -p /tmp/danted && rm /tmp/danted/* -rf && cd /tmp/danted
 
@@ -258,8 +258,6 @@ if [ -d /lib64/security/ ] && [ ! -f /lib64/security/pam_pwdfile.so ];then
 fi
 
 if [ "$INSTALL_FROM" == "compile" ];then
-    apt-get install gcc g++ make libpam-dev libwrap0-dev -y
-
     download_file "source/dante-${VERSION}.tar.gz" "dante-${VERSION}.tar.gz"
 
     if [ -f "dante-${VERSION}.tar.gz" ];then
