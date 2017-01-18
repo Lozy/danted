@@ -251,6 +251,11 @@ if [ ! -s /lib/security/pam_pwdfile.so ];then
     fi
 fi
 
+if [ -d /lib64/security/ ] && [ ! -f /lib64/security/pam_pwdfile.so ];then
+    [ -f /lib/security/pam_pwdfile.so ] && \
+        cp /lib/security/pam_pwdfile.so /lib64/security/ || echo "[ERROR] pam_pwdfile.so not exist!"
+fi
+
 if [ "$INSTALL_FROM" == "compile" ];then
     apt-get install gcc g++ make libpam-dev libwrap0-dev -y
 
