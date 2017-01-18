@@ -297,7 +297,7 @@ clear
 service sockd restart
 
 
-if [ -n "$(netstat -atn | grep "$DEFAULT_PORT")" ];then
+if [ -n "$(ss -ln | grep "$DEFAULT_PORT")" ];then
     cat <<EOF
 ${CCYAN}+-----------------------------------------+$CEND
 ${CGREEN} Dante Socks5 Install Done. $CEND
