@@ -67,7 +67,7 @@ stop_daemon_all(){
 }
 
 force_stop_daemon(){
-    ps -ef | grep '/etc/danted/sbin/sockd' | grep -v 'grep' | awk '{print $2}' | \
+    ps -ef | grep ${DAEMON} | grep -v 'grep' | awk '{print $2}' | \
             while read pid; do kill -9 $pid > /dev/null 2>&1 ;done
 
     [ -f "$PID_FILE" ] && rm -f $PID_FILE
