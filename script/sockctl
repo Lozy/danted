@@ -18,6 +18,7 @@ PASSWD_FILE="/etc/danted/sockd.passwd"
 test -f $DAEMON || exit 0
 test -f $CONFIG_FILE || exit 0
 
+[ -f /etc/init.d/functions ] && . /etc/init.d/functions
 [ -f /etc/default/sockd ] && . /etc/default/sockd
 [ -f /etc/default/color ] && . /etc/default/color
 
