@@ -190,6 +190,9 @@ do
         remove_install
         exit 0
       ;;
+      --no-github)
+        echo "skip download script from github.com"
+      ;;
       --help|-h)
         clear
         options=(

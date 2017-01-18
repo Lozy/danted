@@ -70,4 +70,10 @@ bash install.sh --uninstall
 | OS release | Platform | Provider | Result |
 | :--- | :--- | --- |  --- | 
 | Debian GNU/Linux 8 (jessie) | x86_64 | vultr | pass |
+| Debian GNU/Linux 7 (wheezy) | x86_64 | vultr | -- |
+| Debian GNU/Linux 7 (wheezy) | i686 | vultr | pass |
+| Ubuntu 16.10 (Yakkety Yak)  | x86_64 | vultr | pass |
+| Ubuntu 14.04.5 LTS | i686 | vultr | pass
 | CentOS Linux 7 (Core) | x86_64 | vultr | pass |
+| CentOS Linux 6 | x86_64 | vultr | -- |
+| CentOS Linux 6 | i686 | vultr | -- |
