@@ -67,7 +67,7 @@ bash install.sh --uninstall
 
 ## Test Pass
 
-| OS release | Platform | provider | result |
+| OS release | Platform | Provider | Result |
 | :--- | :--- | --- |  --- | 
 | Debian GNU/Linux 8 (jessie) | x86_64 | vultr | pass |
 | CentOS Linux 7 (Core) | x86_64 | vultr | pass |
