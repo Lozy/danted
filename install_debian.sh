@@ -175,13 +175,13 @@ do
       --whitelist-url=*)
         whitelist="${_PARAMETER#--whitelist-url=}"
       ;;
-      --from-package)
+      --from-package|-p)
         INSTALL_FROM="package"
       ;;
       --update-whitelist|-u)
         gen_config_only="True"
       ;;
-      --force-update|-f|force-update)
+      --force|-f)
         remove_install
       ;;
       --uninstall)

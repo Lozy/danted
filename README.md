@@ -8,9 +8,9 @@ This is the second update to match the systemd and new OS release like Debian 8 
 
 Comparing with the apt-get or building from source manually, this script will benefit you bellow
 
-* Auto-recognize, detect the machine's system automatically and install the build package to build.
+* Auto-recognize, detect the machine's system automatically and compile from source code.
 * Auto-config, check the system's network or read from argument to auto-generate config file.
-* Same-rotation, in multi-ipaddr system. It works like when using differ ip address to connect socks5, your external ip address will be different. That's the main reason why I using Dante for years.
+* Same-rotation, in multi-ipaddr system. It works like when using different ip address to connect socks5, your external ip address will be different. That's the main reason why I using Dante for years.
 * Multi-authorization, you can configure authorization by pam, system or using whitelist.
 
 ## Install
@@ -38,16 +38,16 @@ bash install.sh --uninstall
 
 | Long Option | Short Option | Value refer | description |
 | :--- | :--- | --- | --- |
-| --ip=                 | | ip address list (a.a.a.a;b.b.b.b) | Socks5 Server Ip address |
-|  --port=              | | 2016  [2016]| port for dante socks5 server |
-| --user=               | | Pam-Auth Username | Socks5 Auth user |
-|  --passwd=            | | Pam-Auth Password |Socks5 Auth passwd |
-|  --whitelist=         | | whitelist ip range (a.a.a.a/32;b.b.b.b/32) |Socks5 Auth IP list |
-|  --whitelist-url=     | | online white list file (url) | Socks Auth whitelist http online |
-|  --from-package       | | -- | Install package from Bin package |
-|  --update-whitelist   | -u | --|  update white list |
-|  --force-update       | -f  | -- | force update sockd |
-|  --help  |  -h        | --| print help info |
+| --ip=                | | ip address list (a.a.a.a;b.b.b.b) | Socks5 Server Ip address |
+|  --port=             | | Default: 2016| port for dante socks5 server |
+| --user=              | | Pam-Auth Username | Socks5 Auth user |
+| --passwd=            | | Pam-Auth Password |Socks5 Auth passwd |
+| --whitelist=         | | whitelist ip range (a.a.a.a/32;b.b.b.b/32) |Socks5 Auth IP list |
+| --whitelist-url=     | | online white list file (url) | Socks Auth whitelist http online |
+| --from-package       | -p    | --    | Install package from Bin package |
+| --update-whitelist   | -u    | --    |  update white list |
+| --force              | -f    | --    | force install sockd |
+| --help               | -h    | --    | print help info |
 
 ## Management
 
@@ -70,3 +70,4 @@ bash install.sh --uninstall
 | OS release | Platform | provider | result |
 | :--- | :--- | --- |  --- | 
 | Debian GNU/Linux 8 (jessie) | x86_64 | vultr | pass |
+| CentOS Linux 7 (Core) | x86_64 | vultr | pass |

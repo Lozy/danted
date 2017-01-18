@@ -175,7 +175,7 @@ do
       --whitelist-url=*)
         whitelist="${_PARAMETER#--whitelist-url=}"
       ;;
-      --from-package)
+      --from-package|-p)
         echo "Sorry, install from-package is not available for CentOS."
         # INSTALL_FROM="package"
         exit 1
@@ -183,7 +183,7 @@ do
       --update-whitelist|-u)
         gen_config_only="True"
       ;;
-      --force-update|-f)
+      --force|-f)
         remove_install
       ;;
       --uninstall)
