@@ -1,8 +1,9 @@
-# Sockd (Dante socks5 server auto-install and management)
+# Sockd
+**Dante socks5 server auto-install and management script**
 
 ## About
 To build a socks5 server, we have lots of open-source programs to reach that, [Dante](https://www.inet.no/dante/) is one of them.
-I have been using Dante for years and staring to write this auto-install and management script two years ago.
+I have been using Dante for years and starting to write this auto-install and management script two years ago.
 This is the second update to match the systemd and new OS release like Debian 8 , CentOS 7.
 
 Comparing with the apt-get or building from source manually, this script will benefit you bellow
@@ -21,10 +22,16 @@ bash install.sh
 # run with options: bash install.sh option1 option2
 ```
 
-*if you want to uninstall, using this command*
+* *if you want to uninstall, using this command*
 
 ```bash
 bash install.sh --uninstall
+```
+
+* *if you want to add user*
+
+```bash
+/etc/init.d/sockd adduser USERNAME PASSWORD
 ```
 
 ## Options
