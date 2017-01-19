@@ -17,11 +17,11 @@ if [ -s "/etc/os-release" ];then
     if [ -n "$(echo ${os_name} | grep -Ei 'Debian|Ubuntu' )" ];then
         printf "Current OS: %s\n" "${os_name}"
         wget -qO- --no-check-certificate ${REQUEST_SERVER}/install_debian.sh | \
-            bash -s -- $@
+            bash -s -- $*
     elif [ -n "$(echo ${os_name} | grep -Ei 'CentOS')" ];then
         printf "Current OS: %s\n" "${os_name}"
         wget -qO- --no-check-certificate ${REQUEST_SERVER}/install_centos.sh | \
-            bash -s -- $@
+            bash -s -- $*
     else
         printf "Current OS: %s is not support.\n" "${os_name}"
     fi

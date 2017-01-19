@@ -22,6 +22,7 @@ BIN_SCRIPT="/etc/init.d/sockd"
 DEFAULT_IPADDR=$(ip addr | grep 'inet ' | grep -Ev 'inet 127|inet 192\.168|inet 10\.' | \
             sed "s/[[:space:]]*inet \([0-9.]*\)\/.*/\1/")
 RUN_PATH=$(cd `dirname $0`;pwd )
+RUN_OPTS=$*
 
 ##################------------Func()---------#####################################
 remove_install(){
@@ -154,7 +155,8 @@ download_file(){
 }
 
 ##################------------Menu()---------#####################################
-for _PARAMETER in $*
+echo "Current Options: $RUN_OPTS"
+for _PARAMETER in RUN_OPTS
 do
     case "${_PARAMETER}" in
       --ip=*)   #split in ; ip1;ip2;
