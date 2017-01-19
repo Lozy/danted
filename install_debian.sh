@@ -156,7 +156,7 @@ download_file(){
 
 ##################------------Menu()---------#####################################
 echo "Current Options: $RUN_OPTS"
-for _PARAMETER in RUN_OPTS
+for _PARAMETER in $RUN_OPTS
 do
     case "${_PARAMETER}" in
       --ip=*)   #split in ; ip1;ip2;
