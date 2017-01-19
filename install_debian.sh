@@ -215,7 +215,8 @@ do
         exit 1
       ;;
       *)
-          exit 1
+         echo "option ${_PARAMETER} is not support"
+         exit 1
       ;;
 
     esac
