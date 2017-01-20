@@ -60,7 +60,9 @@ generate_config_iplist(){
         generate_config_ip ${ipaddr} ${port} >> ${CONFIG_PATH}
     done
 
-    if [ ${#ipaddr_list[@]} -gt 1 ];then
+    ipaddr_array=($ipaddr_list)
+
+    if [ ${#ipaddr_array[@]} -gt 1 ];then
         echo "external.rotation: same-same" >> ${CONFIG_PATH}
     fi
 }
