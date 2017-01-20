@@ -26,10 +26,15 @@ test -f $CONFIG_FILE || exit 0
 LOG_FILE=$(grep '^logoutput' ${CONFIG_FILE} | sed 's/.*logoutput: \(.*\).*/\1/g')
 
 update_daemon(){
-    wget -q --no-check-certificate ${ONLINE_LINK} -O /etc/init.d/sockd
+      wget -q --no-check-certificate ${ONLINE_LINK} -O /etc/init.d/sockd
 }
 
 start_daemon_all(){
+      if [ -z "$(command -v start-stop-daemon)" ];then
+        echo -e "${CRED}start-stop-daemon not exist! ${CEND}"
+        return 1
+      fi
+
       if [ -s $PID_FILE ] && [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PID_FILE)$" )" ];then
            echo -e "${CRED}Danted Server [ Running;Failed ] ${CEND}"
            return 0
@@ -57,6 +62,11 @@ start_daemon_all(){
 }
 
 stop_daemon_all(){
+    if [ -z "$(command -v start-stop-daemon)" ];then
+        echo -e "${CRED}start-stop-daemon not exist! ${CEND}"
+        return 1
+    fi
+
     if [ ! -s $PID_FILE ];then 
           echo -e "${CRED}Danted Server [ PID.LOST;Unable ] ${CEND}"
     fi
@@ -79,6 +89,11 @@ force_stop_daemon(){
 }
 
 reload_daemon_all(){
+    if [ -z "$(command -v start-stop-daemon)" ];then
+        echo -e "${CRED}start-stop-daemon not exist! ${CEND}"
+        return 1
+    fi
+
     if [ -s $PID_FILE ];then
       if [ -z "$( ps aux | awk '{print $2}'| grep "^$(cat $PID_FILE)$" )" ];then
         echo -e "${CRED}Danted Server [ PID.DIE;Unable ] ${CEND}"
