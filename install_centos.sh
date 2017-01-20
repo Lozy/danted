@@ -256,7 +256,7 @@ if [ -z "$(command -v start-stop-daemon)" ];then
     download_file "source/apps-sys-utils-start-stop-daemon-IR1_9_18-2.tar.gz" "start-stop-daemon-IR1_9_18-2.tar.gz"
     tar zxvf start-stop-daemon-IR1_9_18-2.tar.gz
     gcc apps/sys-utils/start-stop-daemon-IR1_9_18-2/start-stop-daemon.c \
-        -o start-stop-daemon -o /usr/sbin/start-stop-daemon
+        -o start-stop-daemon -o /sbin/start-stop-daemon
 fi
 
 #--# Check libpam-pwdfile
