@@ -14,6 +14,7 @@ DESC="Dante SOCKS 5 daemon"
 PID_FILE="/var/run/sockd.pid"
 CONFIG_FILE="/etc/danted/sockd.conf"
 PASSWD_FILE="/etc/danted/sockd.passwd"
+ONLINE_LINK="https://raw.github.com/Lozy/danted/master/script/$0"
 
 test -f $DAEMON || exit 0
 test -f $CONFIG_FILE || exit 0
@@ -23,6 +24,10 @@ test -f $CONFIG_FILE || exit 0
 [ -f /etc/default/color ] && . /etc/default/color
 
 LOG_FILE=$(grep '^logoutput' ${CONFIG_FILE} | sed 's/.*logoutput: \(.*\).*/\1/g')
+
+update_daemon(){
+    wget -q --no-check-certificate ${ONLINE_LINK} -O /etc/init.d/$0
+}
 
 start_daemon_all(){
       if [ -s $PID_FILE ] && [ -n "$( ps aux | awk '{print $2}'| grep "^$(cat $PID_FILE)$" )" ];then
@@ -146,12 +151,12 @@ del_uer(){
 }
 
 clear_log(){
-    [ -f "${LOG_FILE}" ]  && cp /dev/null ${LOG_FILE}
+    [ -f "$PID_FILE" ] && rm -f $PID_FILE
+    [ -f "$LOG_FILE" ]  && cp /dev/null $LOG_FILE
 }
 
 tail_log(){
     local LOG_FILE="$1"
-
     [ -f ${LOG_FILE} ] && tail -f ${LOG_FILE}
 }
 
@@ -159,26 +164,26 @@ case "$1" in
   start)
     echo "Starting $DESC: "
     start_daemon_all
-  ;;
+    ;;
   stop)
     echo "Stopping $DESC: "
     stop_daemon_all
-  ;;
+    ;;
   force-stop)
     echo "Stopping $DESC: [Force]"
     force_stop_daemon
-  ;;
+    ;;
   reload)
     echo "Reloading $DESC configuration files."
     reload_daemon_all
-  ;;
+    ;;
   restart)
     echo "Restarting $DESC: "
     stop_daemon_all
     force_stop_daemon
     sleep 1
     start_daemon_all
-  ;;
+    ;;
   status|state)
     clear
     status
@@ -195,11 +200,20 @@ case "$1" in
      echo "==> ${LOG_FILE} <=="
      tail_log "${LOG_FILE}"
     ;;
+  conf)
+      echo "==> ${CONFIG_FILE} <=="
+      cat ${CONFIG_FILE}
+    ;;
+  update)
+      echo -n "==> update daemon script [ /etc/init.d/$0 ]"
+      update_daemon
+      echo " <=="
+    ;;
   *)
-  N=/etc/init.d/sockd
-  echo " Usage: $N {start|stop|restart|reload|status|state|adduser|deluser|tail}" >&2
-  exit 1
-  ;;
+    N=/etc/init.d/sockd
+    echo " Usage: $N {start|stop|restart|reload|status|state|adduser|deluser|tail|conf|update}" >&2
+    exit 1
+    ;;
 esac
 
 exit 0
