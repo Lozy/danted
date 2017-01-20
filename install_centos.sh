@@ -46,6 +46,7 @@ generate_config_ip(){
 # Generate interface ${ipaddr}
 internal: ${ipaddr}  port = ${port}
 external: ${ipaddr}
+
 EOF
 }
 
