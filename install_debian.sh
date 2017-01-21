@@ -230,9 +230,9 @@ done
 [ -n "${user}" ] && DEFAULT_USER="${user}"
 [ -n "${passwd}" ] && DEFAULT_PAWD="${passwd}"
 [ -n "${whitelist_ipaddrs}" ] && WHITE_LIST_NET="${whitelist_ipaddrs}"
-[ -n "${whilelist}" ] && WHITE_LIST="${whilelist}"
+[ -n "${whitelist}" ] && WHITE_LIST="${whitelist}"
 
-generate_config "${DEFAULT_IPADDR}" "${WHITE_LIST}"
+generate_config "${DEFAULT_IPADDR}" "${WHITE_LIST}" "${WHITE_LIST_NET}"
 
 [ -n "$gen_config_only" ]  && echo "===========>> update config" && cat ${CONFIG_PATH} && exit 0
 
