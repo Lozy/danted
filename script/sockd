@@ -158,7 +158,7 @@ add_user(){
 
 }
 
-del_uer(){
+del_user(){
     local User=$1
     [ -z "$User" ] && echo " Error: User Name can't be blank" && return 0
     [ -f "/usr/bin/htpasswd" ]  && /usr/bin/htpasswd -D ${PASSWD_FILE} ${User} || \
