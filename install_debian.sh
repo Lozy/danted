@@ -175,7 +175,7 @@ do
         passwd="${_PARAMETER#--passwd=}"
       ;;
       --whitelist=*)
-        whitelist_ipaddrs=$(echo "${_PARAMETER#--whitelist=}" | sed 's/;/\n/g' | sed '/^$/d')
+        whitelist_ipaddrs=$(echo "${_PARAMETER#--whitelist=}" | sed 's/:/\n/g' | sed '/^$/d')
       ;;
       --whitelist-url=*)
         whitelist="${_PARAMETER#--whitelist-url=}"
