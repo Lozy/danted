@@ -44,7 +44,7 @@ bash install.sh --uninstall
 |  --port=             | | Default: 2016| port for dante socks5 server |
 | --user=              | | Pam-Auth Username | Socks5 Auth user |
 | --passwd=            | | Pam-Auth Password |Socks5 Auth passwd |
-| --whitelist=         | | whitelist ip range (a.a.a.a/32;b.b.b.b/32) |Socks5 Auth IP list |
+| --whitelist=         | | whitelist ip range (a.a.a.a/32:b.b.b.b/32) |Socks5 Auth IP list |
 | --whitelist-url=     | | online white list file (url) | Socks Auth whitelist http online |
 | --from-package       | -p    | --    | Install package from Bin package |
 | --update-whitelist   | -u    | --    |  update white list |
