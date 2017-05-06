@@ -162,8 +162,8 @@ echo "Current Options: $RUN_OPTS"
 for _PARAMETER in $RUN_OPTS
 do
     case "${_PARAMETER}" in
-      --ip=*)   #split in ; ip1;ip2;
-        ipaddr_list=$(echo "${_PARAMETER#--ip=}" | sed 's/;/\n/g' | sed '/^$/d')
+      --ip=*)   #split by: ip1:ip2:ip3
+        ipaddr_list=$(echo "${_PARAMETER#--ip=}" | sed 's/:/\n/g' | sed '/^$/d')
       ;;
       --port=*)
         port="${_PARAMETER#--port=}"
