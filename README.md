@@ -40,7 +40,7 @@ bash install.sh --uninstall
 
 | Long Option | Short Option | Value refer | description |
 | :--- | :--- | --- | --- |
-| --ip=                | | ip address list (a.a.a.a;b.b.b.b) | Socks5 Server Ip address |
+| --ip=                | | ip address list (a.a.a.a:b.b.b.b) *#change ';' to ':' * | Socks5 Server Ip address |
 |  --port=             | | Default: 2016| port for dante socks5 server |
 | --user=              | | Pam-Auth Username | Socks5 Auth user |
 | --passwd=            | | Pam-Auth Password |Socks5 Auth passwd |
