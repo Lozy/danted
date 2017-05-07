@@ -275,7 +275,7 @@ if [ -d /lib64/security/ ] && [ ! -f /lib64/security/pam_pwdfile.so ];then
 fi
 
 if [ "$INSTALL_FROM" == "compile" ];then
-    apt-get install gcc g++ make libpam-dev libwrap0-dev -y
+    yum install gcc g++ make libpam-dev libwrap0-dev -y
 
     download_file "source/dante-${VERSION}.tar.gz" "dante-${VERSION}.tar.gz"
 
