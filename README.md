@@ -20,7 +20,7 @@ wget --no-check-certificate https://raw.github.com/Lozy/danted/master/install.sh
 bash install.sh
 
 # run with options: bash install.sh option1 option2
-bash install.sh --ip="A.A.A.A;B.B.B.B" --port=2016 --user=sockd --passwd=sockd --whitelist="X.X.X.X/32"
+bash install.sh --ip="A.A.A.A:B.B.B.B" --port=2016 --user=sockd --passwd=sockd --whitelist="X.X.X.X/32"
 
 ```
 
