@@ -1,5 +1,5 @@
 # Sockd
-**Dante socks5 server auto-install and management script**
+**Dante socks5 server (v1.3.2) auto-install and management script** 
 
 ## About
 To build a socks5 server, we have lots of open-source programs to reach that, [Dante](https://www.inet.no/dante/) is one of them.
