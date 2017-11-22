@@ -19,7 +19,7 @@ if [ -s "/etc/os-release" ];then
         printf "Current OS: %s\n" "${os_name}"
         SYSTEM_RECOGNIZE="debian"
 
-    elif [ -n "$(echo ${os_name} | grep -Ei 'CentOS')" ];then
+    elif [ -n "$(echo ${os_name} | grep -Ei 'CentOS|AMI')" ];then
         printf "Current OS: %s\n" "${os_name}"
         SYSTEM_RECOGNIZE="centos"
     else
