@@ -271,7 +271,7 @@ if [ "$INSTALL_FROM" == "compile" ];then
 
     if [ -f "dante-${VERSION}.tar.gz" ];then
         tar zxvf dante*
-        cd dante* && ./configure --with-sockd-conf=${CONFIG_PATH} --prefix=${BIN_DIR}
+        cd dante*/ && ./configure --with-sockd-conf=${CONFIG_PATH} --prefix=${BIN_DIR}
         make && make install
     fi
 else
