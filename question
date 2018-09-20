@@ -1,0 +1,2 @@
+## 我遇到了一些问题  
+我的系统是Ubuntu16.04，第一次成功安装了，因为没有做相应的配置，索性我直接卸载了，但是再安装就一直不成功了，我在安装最后捕捉到了Failed to execute operation: Too many levels of symbolic links这样一段报错。
