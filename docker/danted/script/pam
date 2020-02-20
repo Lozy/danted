@@ -1,0 +1,47 @@
+#! /bin/sh
+
+DESC="Dante SOCKS 5 daemon"
+PASSWD_FILE="/home/danted/conf/sockd.passwd"
+
+show_user(){
+   cat ${PASSWD_FILE} | cut -d ":" -f 1
+}
+
+add_user(){
+    local User=$1
+    local Password=$2
+    ( [ -z "$User" ] || [ -z "$Password" ] ) && \
+        echo " Error: User or password can't be blank" && return 0
+    [ ! -f "${PASSWD_FILE}" ] && opt=" -c "
+    [ -f "/usr/bin/htpasswd" ] && /usr/bin/htpasswd ${opt} -d -b ${PASSWD_FILE} ${User} ${Password} || \
+        echo " Error: /usr/bin/htpasswd not exist. please install apache2-utils"
+}
+
+del_user(){
+    local User=$1
+    [ -z "$User" ] && echo " Error: User Name can't be blank" && return 0
+    [ -f "/usr/bin/htpasswd" ]  && /usr/bin/htpasswd -D ${PASSWD_FILE} ${User} || \
+        echo " Error: /usr/bin/htpasswd not exist. please install apache2-utils"
+}
+
+case "$1" in
+  add)
+    echo "Adding User For $DESC: "
+    add_user "$2" "$3"
+    ;;
+  del)
+    echo "Clearing User For $DESC: "
+    del_user "$2"
+    ;;
+  show)
+    echo "Show Users For $DESC: "
+    show_user
+    ;;
+ *)
+    N="pam"
+    echo " Usage: $N {show|add [USERNAME PASSWORD]|del [USERNAME]}" >&2
+    exit 1
+    ;;
+esac
+
+exit 0
