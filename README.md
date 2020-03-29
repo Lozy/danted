@@ -59,7 +59,6 @@ bash install.sh --uninstall
 | service sockd stop | /etc/init.d/sockd stop | stop socks5 server daemon |
 | service sockd restart | /etc/init.d/sockd restart | restart socks5 server daemon |
 | service sockd reload | /etc/init.d/sockd reload | reload socks5 server daemon |
-| service sockd restart | /etc/init.d/sockd restart | restart socks5 server daemon |
 | service sockd status | | systemd process status |
 | service sockd state | /etc/init.d/sockd state | running state |
 | service sockd tail | /etc/init.d/sockd tail | sock log tail |
