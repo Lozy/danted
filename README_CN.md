@@ -1,3 +1,33 @@
+<h2>Danted Socks5 (Docker)</h2>
+<h3>******安装用说明</h3>
+<ul>
+<li> 1. 编辑 docker-compose.yaml (修改用户密码文件路径)
+<code>
+version: '3'
+
+services:
+
+  sockd:
+    image: lozyme/sockd
+    restart: always
+    ports:
+      - 2020:2020
+    volumes:
+      - CONFIGFILE:/home/danted/conf/sockd.passwd
+</code>
+</li>
+<li> 2. 启动
+<code>
+docker-compose up -d
+</code>
+</li>
+<li> 3. 检查端口
+<code>
+ss -lnp | grep 2020
+</code>
+</li>
+</ul>
+
 <h2>Danted Socks5 一键安装脚本</h2>
 <h3>******安装选项</h3>
 
