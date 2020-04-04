@@ -1,6 +1,6 @@
 # Sockd
 
-基于 [Dante socks5](https://www.inet.no/dante) 的自动化部署镜像/脚本.
+基于 [Dante socks5 (1.3.2/1.4.2)](https://www.inet.no/dante) 的自动化部署镜像/脚本.
 
 ## Docker 安装模式
 
