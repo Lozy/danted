@@ -35,9 +35,15 @@ ss -lnp | grep 2020
 #### 4. 添加用户
 
 ```bash
-docker exec docker_sockd_1 script/pam show
+docker exec docker_sockd_1 script/pam add USER PASSWORD
 ```
 
+
+#### 5. 查看用户
+
+```bash
+docker exec docker_sockd_1 script/pam show
+```
 
 ## Danted Socks5 一键安装脚本
 
