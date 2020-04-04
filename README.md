@@ -12,7 +12,8 @@ Comparing with the apt-get or building from source manually, this script will be
 * Auto-config, check the system's network or read from argument to auto-generate config file.
 * Same-rotation, in multi-ipaddr system. It works like when using different ip address to connect socks5, your external ip address will be different. That's the main reason why I using Dante for years.
 * Multi-authorization, you can configure authorization by pam, system or using whitelist.
-* Docker run support [New].
+* Docker support [New]
+* Support Dante Latest version 1.4.2 [New]
 
 ## Install by Docker
 
@@ -108,7 +109,8 @@ bash install.sh --uninstall
 | Long Option | Short Option | Value refer | description |
 | :--- | :--- | --- | --- |
 | --ip=                | | ip address list (a.a.a.a:b.b.b.b) *#change ';' to ':' * | Socks5 Server Ip address |
-|  --port=             | | Default: 2016| port for dante socks5 server |
+| --port=             | | Default: 2016| port for dante socks5 server |
+| --version=          | | Default: 1.3.2 | dante server version, latest is 1.4.2 |
 | --user=              | | Pam-Auth Username | Socks5 Auth user |
 | --passwd=            | | Pam-Auth Password |Socks5 Auth passwd |
 | --whitelist=         | | whitelist ip range (a.a.a.a/32:b.b.b.b/32) |Socks5 Auth IP list |
