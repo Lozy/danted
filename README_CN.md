@@ -19,7 +19,7 @@
 # sockd.passwd 是密码文件 
 docker run -d \
     --name sockd \
-    --port 2020:2020 \
+    --publish 2020:2020 \
     --volume sockd.passwd:/home/danted/conf/sockd.passwd \
     lozyme/sockd
 ```
