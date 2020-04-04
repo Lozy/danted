@@ -242,7 +242,7 @@ do
         options=(
                   "--ip=@Socks5 Server Ip address" \
                   "--port=[${DEFAULT_PORT}]@port for dante socks5 server" \
-                  "--version=@Specify dante version [$VERSION]"\
+                  "--version=@Specify dante version [$VERSION]"\s
                   "--user=@Socks5 Auth user" \
                   "--passwd=@Socks5 Auth passwd"\
                   "--whitelist=@Socks5 Auth IP list" \
