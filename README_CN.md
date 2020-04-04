@@ -64,6 +64,13 @@ docker exec docker_sockd_1 script/pam add USER PASSWORD
 docker exec docker_sockd_1 script/pam show
 ```
 
+#### 7. 验证 (外部访问需修改 127.0.0.1)
+
+```bash
+curl https://ifconfig.co --socks5 127.0.0.1:2020 --proxy-user sockd:sockd
+```
+
+
 ## 自动安装脚本
 
 ### 安装选项

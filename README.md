@@ -22,7 +22,7 @@ Comparing with the apt-get or building from source manually, this script will be
 # sockd.passwd is a `htpasswd` file contains socks5 auth user/password. 
 docker run -d \
     --name sockd \
-    --port 2020:2020 \
+    --publish 2020:2020 \
     --volume sockd.passwd:/home/danted/conf/sockd.passwd \
     lozyme/sockd
 ```
@@ -61,18 +61,22 @@ docker-compose up -d
 ss -lnp | grep 2020
 ```
 
-#### Verify
-
-```bash
-curl https://ifconfig.co --socks5 127.0.0.1:2020 --proxy-user sockd:sockd
-```
-
 #### User Show/Add/Modify/Delete
 
 ```bash
 [Show]          $docker exec docker_sockd_1 script/pam show
 [Add/Modify]    $docker exec docker_sockd_1 script/pam add USER PASSWORD
 [Delete]        $docker exec docker_sockd_1 script/pam del USER
+```
+
+> You should run bellow to change default password
+> 
+> docker exec docker_sockd_1 script/pam add sockd sockd
+
+#### Verify
+
+```bash
+curl https://ifconfig.co --socks5 127.0.0.1:2020 --proxy-user sockd:sockd
 ```
 
 
