@@ -20,7 +20,11 @@ Comparing with the apt-get or building from source manually, this script will be
 
 ```bash
 # sockd.passwd is a `htpasswd` file contains socks5 auth user/password. 
-docker run -d --name sockd --port 2020:2020 --volume sockd.passwd:/home/danted/conf/sockd.passwd lozyme/sockd
+docker run -d 
+    --name sockd \
+    --port 2020:2020 \
+    --volume sockd.passwd:/home/danted/conf/sockd.passwd \
+    lozyme/sockd
 ```
 
 ### Docker Compose

@@ -13,7 +13,18 @@
 
 ### 安装使用说明
 
-#### 1. 编辑 docker-compose.yaml (定义用户密码文件路径 `CONFIGFILE`)
+#### 1. 使用 docker run
+
+```bash
+# sockd.passwd 是密码文件 
+docker run -d 
+    --name sockd \
+    --port 2020:2020 \
+    --volume sockd.passwd:/home/danted/conf/sockd.passwd \
+    lozyme/sockd
+```
+
+#### 2. 使用 docker-compose.yaml (定义用户密码文件路径 `CONFIGFILE`)
 
 ```yaml
 version: '3'
@@ -29,26 +40,25 @@ services:
       - CONFIGFILE:/home/danted/conf/sockd.passwd
 ```
 
-#### 2. 启动
+#### 3. 启动
 
 ```bash
 docker-compose up -d
 ```
 
-#### 3. 检查端口
+#### 4. 检查端口
 
 ```bash
 ss -lnp | grep 2020
 ```
 
-#### 4. 添加用户
+#### 5. 添加用户
 
 ```bash
 docker exec docker_sockd_1 script/pam add USER PASSWORD
 ```
 
-
-#### 5. 查看用户
+#### 6. 查看用户
 
 ```bash
 docker exec docker_sockd_1 script/pam show
