@@ -1,8 +1,17 @@
-# Danted Socks5 使用说明
+# Sockd
 
-## Danted Socks5 (Docker)
+基于 [Dante socks5](https://www.inet.no/dante) 的自动化部署镜像/脚本.
 
-### 安装用说明
+## Docker 安装模式
+
+### 优势
+
++ 基于 Alpine, 精简镜像.
++ 支持 `Pam.user` 认证, 不与系统用户关联
++ 支持 一行命令启动
+
+
+### 安装使用说明
 
 #### 1. 编辑 docker-compose.yaml (定义用户密码文件路径 `CONFIGFILE`)
 
@@ -45,7 +54,7 @@ docker exec docker_sockd_1 script/pam add USER PASSWORD
 docker exec docker_sockd_1 script/pam show
 ```
 
-## Danted Socks5 一键安装脚本
+## 自动安装脚本
 
 ### 安装选项
 
