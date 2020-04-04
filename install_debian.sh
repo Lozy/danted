@@ -19,7 +19,7 @@ BIN_PATH="/etc/danted/sbin/sockd"
 CONFIG_PATH="/etc/danted/sockd.conf"
 BIN_SCRIPT="/etc/init.d/sockd"
 
-DEFAULT_IPADDR=$(ip addr | grep 'inet ' | grep -Ev 'inet 127|inet 192\.168|inet 10\.' | \
+DEFAULT_IPADDR=$(ip addr | grep 'inet ' | grep -Ev 'inet 127|inet 192\.168' | \
             sed "s/[[:space:]]*inet \([0-9.]*\)\/.*/\1/")
 RUN_PATH=$(cd `dirname $0`;pwd )
 RUN_OPTS=$*
@@ -69,6 +69,7 @@ generate_config_iplist(){
 }
 
 generate_config_static(){
+    if [ "$VERSION" == "1.3.2" ];then
     cat <<EOF
 method: pam none
 clientmethod: none
@@ -83,6 +84,26 @@ client block {
         from: 0.0.0.0/0 to: 0.0.0.0/0
 }
 EOF
+    else
+    cat <<EOF
+clientmethod: none
+socksmethod: pam.username none
+
+user.privileged: root
+user.notprivileged: sockd
+
+logoutput: /var/log/sockd.log
+
+client pass {
+    from: 0/0  to: 0/0
+    log: connect disconnect
+}
+client block {
+    from: 0/0 to: 0/0
+    log: connect error
+}
+EOF
+    fi
 }
 generate_config_white(){
     local white_ipaddr="$1"
@@ -112,6 +133,7 @@ generate_config_whitelist(){
 }
 
 generate_config_bottom(){
+    if [ "$VERSION" == "1.3.2" ];then
     cat <<EOF
 pass {
         from: 0.0.0.0/0 to: 0.0.0.0/0
@@ -125,6 +147,20 @@ block {
 }
 
 EOF
+    else
+    cat <<EOF
+socks pass {
+    from: 0/0 to: 0/0
+    socksmethod: pam.username
+    log: connect disconnect
+}
+socks block {
+    from: 0/0 to: 0/0
+    log: connect error
+}
+
+EOF
+    fi
 }
 
 generate_config(){
@@ -162,6 +198,9 @@ echo "Current Options: $RUN_OPTS"
 for _PARAMETER in $RUN_OPTS
 do
     case "${_PARAMETER}" in
+      --version=*)
+        VERSION="${_PARAMETER#--version=}"
+      ;;
       --ip=*)   #split in ; ip1;ip2;
         ipaddr_list=$(echo "${_PARAMETER#--ip=}" | sed 's/:/\n/g' | sed '/^$/d')
       ;;
@@ -266,12 +305,12 @@ if [ -d /lib64/security/ ] && [ ! -f /lib64/security/pam_pwdfile.so ];then
         cp /lib/security/pam_pwdfile.so /lib64/security/ || echo "[ERROR] pam_pwdfile.so not exist!"
 fi
 
-if [ "$INSTALL_FROM" == "compile" ];then
+if [ "$INSTALL_FROM" == "compile" ] || [ "$VERSION" != "1.3.2" ];then
     download_file "source/dante-${VERSION}.tar.gz" "dante-${VERSION}.tar.gz"
 
     if [ -f "dante-${VERSION}.tar.gz" ];then
-        tar zxvf dante*
-        cd dante*/ && ./configure --with-sockd-conf=${CONFIG_PATH} --prefix=${BIN_DIR}
+        tar xzf dante-${VERSION}.tar.gz --strip 1
+        ./configure --with-sockd-conf=${CONFIG_PATH} --prefix=${BIN_DIR}
         make && make install
     fi
 else
