@@ -12,8 +12,67 @@ Comparing with the apt-get or building from source manually, this script will be
 * Auto-config, check the system's network or read from argument to auto-generate config file.
 * Same-rotation, in multi-ipaddr system. It works like when using different ip address to connect socks5, your external ip address will be different. That's the main reason why I using Dante for years.
 * Multi-authorization, you can configure authorization by pam, system or using whitelist.
+* Docker run support [New].
 
-## Install
+## Install by Docker
+
+### Docker Run
+
+```bash
+# sockd.passwd is a `htpasswd` file contains socks5 auth user/password. 
+docker run -d --name sockd --port 2020:2020 --volume sockd.passwd:/home/danted/conf/sockd.passwd lozyme/sockd
+```
+
+### Docker Compose
+
+#### Generate compose
+
+```yaml
+#
+# wget https://raw.githubusercontent.com/Lozy/danted/dev/docker/docker-compose.yaml
+#
+version: '3'
+
+services:
+
+  sockd:
+    image: lozyme/sockd
+    restart: always
+    ports:
+      - 2020:2020
+    volumes:
+      - sockd.passwd:/home/danted/conf/sockd.passwd
+      # - sockd.conf:/home/danted/conf/sockd.conf
+```
+
+#### Run
+
+```bash
+docker-compose up -d
+```
+
+#### Check
+
+```bash
+ss -lnp | grep 2020
+```
+
+#### Verify
+
+```bash
+curl https://ifconfig.co --socks5 127.0.0.1:2020 --proxy-user sockd:sockd
+```
+
+#### User Show/Add/Modify/Delete
+
+```bash
+[Show]          $docker exec docker_sockd_1 script/pam show
+[Add/Modify]    $docker exec docker_sockd_1 script/pam add USER PASSWORD
+[Delete]        $docker exec docker_sockd_1 script/pam del USER
+```
+
+
+## Install by Script
 
 ```bash
 wget --no-check-certificate https://raw.github.com/Lozy/danted/master/install.sh -O install.sh 
