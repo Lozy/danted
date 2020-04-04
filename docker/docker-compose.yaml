@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+
+  sockd:
+    image: lozyme/sockd
+    restart: always
+    ports:
+      - 2020:2020
+    volumes:
+      -sockd.passwd:/home/danted/conf/sockd.passwd
