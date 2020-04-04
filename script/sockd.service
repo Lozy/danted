@@ -4,7 +4,7 @@ Description=Dante Socks5 Daemon, Provider by sockd.info
 Documentation=https://github.com/lozy/danted
 ConditionPathExists=/etc/danted/sockd.conf
 ConditionPathExists=/etc/default/sockd
-ConditionPathExists=!/var/run/sockd.pid
+#ConditionPathExists=!/var/run/sockd.pid
 
 [Service]
 EnvironmentFile=-/etc/default/sockd
