@@ -136,16 +136,16 @@ bash install.sh
 
 ### 使用说明
 
-+ 1. 命令参数 `/etc/init.d/danted {start|stop|restart|status|add|del}`
-+ 2. 重启sock5 `/etc/init.d/danted restart`  或者 `service danted restart`
-+ 3. 关闭sock5 `/etc/init.d/danted stop` 或者 `service danted stop`
-+ 4. 开启sock5 `/etc/init.d/danted start` 或者 `service danted start`
-+ 5. 查看sock5状态 `/etc/init.d/danted status` 或者 `service danted status`
-+ 6. 添加SOCK5 PAM用户/修改密码 `/etc/init.d/danted add 用户名 密码`
-+ 7. 删除SOCK5 PAM用户 `/etc/init.d/danted del 用户名`
++ 1. 命令参数 `/etc/init.d/sockd {start|stop|restart|status|add|del}`
++ 2. 重启sock5 `/etc/init.d/sockd restart`  或者 `service sockd restart`
++ 3. 关闭sock5 `/etc/init.d/sockd stop` 或者 `service sockd stop`
++ 4. 开启sock5 `/etc/init.d/sockd start` 或者 `service sockd start`
++ 5. 查看sock5状态 `/etc/init.d/sockd state` 或者 `service sockd state`
++ 6. 添加SOCK5 PAM用户/修改密码 `/etc/init.d/sockd add 用户名 密码`
++ 7. 删除SOCK5 PAM用户 `/etc/init.d/sockd del 用户名`
 + 8. 配置文件路径 `/etc/danted/sockd.conf`
-+ 9. 日志记录路径 `/var/log/danted.log`
-+ 10. danted 帮助命令 `danted --help`
++ 9. 日志记录路径 `/var/log/sockd.log`
++ 10. sockd 帮助命令 `sockd --help`
 
 ### 注意事项
 
