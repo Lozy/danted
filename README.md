@@ -42,6 +42,7 @@ services:
 
   sockd:
     image: lozyme/sockd
+    container_name: sockd
     restart: always
     ports:
       - 2020:2020
@@ -64,15 +65,19 @@ ss -lnp | grep 2020
 
 #### User Show/Add/Modify/Delete
 
+> You should run bellow to change default password
+
 ```bash
-[Show]          $docker exec docker_sockd_1 script/pam show
-[Add/Modify]    $docker exec docker_sockd_1 script/pam add USER PASSWORD
-[Delete]        $docker exec docker_sockd_1 script/pam del USER
+docker exec sockd script/pam add sockd sockd
 ```
 
-> You should run bellow to change default password
-> 
-> docker exec docker_sockd_1 script/pam add sockd sockd
+> more command you could use
+
+```bash
+[Show]          $docker exec sockd script/pam show
+[Add/Modify]    $docker exec sockd script/pam add USER PASSWORD
+[Delete]        $docker exec sockd script/pam del USER
+```
 
 #### Verify
 

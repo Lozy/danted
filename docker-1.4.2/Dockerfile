@@ -15,6 +15,9 @@ ENV LIBPAM_FILE libpam-pwdfile.zip
 ENV LIBPAM_DIR libpam-pwdfile-master
 ENV LIBPAM_DANTE /etc/pam.d/sockd
 
+ENV CONFIG_GUESS "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD"
+ENV CONFIG_SUB "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD"
+
 #RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
 
 RUN apk add --no-cache linux-pam apache2-utils && \
@@ -22,6 +25,8 @@ RUN apk add --no-cache linux-pam apache2-utils && \
     mkdir -p ${DANTE_TEMP} && cd ${DANTE_TEMP} && \
     wget ${DANTE_URL} -O ${DANTE_FILE} && \
     tar xzf ${DANTE_FILE} --strip 1 && \
+    wget ${CONFIG_GUESS} -O config.guess && \
+    wget ${CONFIG_SUB} -O config.sub && \
     ac_cv_func_sched_setscheduler=no ./configure --with-sockd-conf=${DANTE_CONFIG} --prefix=${DANTE_DIR} && \
     make && make install && \
     cd ${DANTE_TEMP} && \

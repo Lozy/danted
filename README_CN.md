@@ -33,6 +33,7 @@ services:
 
   sockd:
     image: lozyme/sockd
+    container_name: sockd
     restart: always
     ports:
       - 2020:2020
@@ -55,13 +56,13 @@ ss -lnp | grep 2020
 #### 5. 添加用户
 
 ```bash
-docker exec docker_sockd_1 script/pam add USER PASSWORD
+docker exec sockd script/pam add USER PASSWORD
 ```
 
 #### 6. 查看用户
 
 ```bash
-docker exec docker_sockd_1 script/pam show
+docker exec sockd script/pam show
 ```
 
 #### 7. 验证 (外部访问需修改 127.0.0.1)
