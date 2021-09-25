@@ -311,8 +311,12 @@ if [ "$INSTALL_FROM" == "compile" ] || [ "$VERSION" != "1.3.2" ];then
 
     if [ -f "dante-${VERSION}.tar.gz" ];then
         tar xzf dante-${VERSION}.tar.gz --strip 1
-        ./configure --with-sockd-conf=${CONFIG_PATH} --prefix=${BIN_DIR}
-        make && make install
+
+        # PATCH CONFIG
+        download_file "source/config.guess" "config.guess"
+        download_file "source/config.sub" "config.sub"
+
+        ./configure --with-sockd-conf=${CONFIG_PATH} --prefix=${BIN_DIR} && make && make install
     fi
 else
     download_file "package/${PACKAGE_NAME}" "${PACKAGE_NAME}"
