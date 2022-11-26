@@ -345,7 +345,7 @@ else
     update-rc.d sockd defaults
 fi
 
-clear
+# clear
 service sockd restart
 
 
