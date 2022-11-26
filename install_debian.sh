@@ -307,6 +307,13 @@ if [ -d /lib64/security/ ] && [ ! -f /lib64/security/pam_pwdfile.so ];then
 fi
 
 if [ "$INSTALL_FROM" == "compile" ] || [ "$VERSION" != "1.3.2" ];then
+
+    if [ "$VERSION" != "1.3.2" ];then
+       compile_args='--disable-preload'
+    else
+       compile_args=''
+    fi
+    
     download_file "source/dante-${VERSION}.tar.gz" "dante-${VERSION}.tar.gz"
 
     if [ -f "dante-${VERSION}.tar.gz" ];then
@@ -316,7 +323,7 @@ if [ "$INSTALL_FROM" == "compile" ] || [ "$VERSION" != "1.3.2" ];then
         download_file "source/config.guess" "config.guess"
         download_file "source/config.sub" "config.sub"
 
-        ./configure --with-sockd-conf=${CONFIG_PATH} --prefix=${BIN_DIR} && make && make install
+        ./configure --with-sockd-conf=${CONFIG_PATH} --prefix=${BIN_DIR} ${compile_args} && make && make install
     fi
 else
     download_file "package/${PACKAGE_NAME}" "${PACKAGE_NAME}"
