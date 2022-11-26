@@ -48,7 +48,7 @@ fi
 
 if [ -n "$SYSTEM_RECOGNIZE" ];then
     wget -qO- --no-check-certificate ${REQUEST_SERVER}/install_${SYSTEM_RECOGNIZE}.sh | \
-        bash -s -- $*
+        bash -s -- $*  | tee /tmp/danted_install.log
 else
     printf "[Error] Installing terminated"
     exit 1
