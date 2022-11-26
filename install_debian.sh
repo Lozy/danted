@@ -308,7 +308,7 @@ fi
 
 if [ "$INSTALL_FROM" == "compile" ] || [ "$VERSION" != "1.3.2" ];then
 
-    if [ "$VERSION" != "1.3.2" ];then
+    if [ "$VERSION" == "1.3.2" ];then
        compile_args='--disable-preload'
     else
        compile_args=''
