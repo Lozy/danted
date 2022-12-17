@@ -3,7 +3,7 @@
 # Provides:          sockd.info (Lozy)
 #
 
-VERSION="1.4.2"
+VERSION="1.4.3"
 INSTALL_FROM="compile"
 DEFAULT_PORT="2016"
 DEFAULT_USER=""

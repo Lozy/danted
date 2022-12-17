@@ -2,7 +2,7 @@ FROM alpine:latest
 
 ENV MIRROR https://public.sockd.info/source/
 
-ENV DANTE_VER 1.4.2
+ENV DANTE_VER 1.4.3
 ENV DANTE_URL $MIRROR/dante-$DANTE_VER.tar.gz
 ENV DANTE_FILE dante.tar.gz
 ENV DANTE_TEMP /tmp/danted

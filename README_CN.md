@@ -1,6 +1,6 @@
 # Sockd
 
-基于 [Dante socks5 (1.3.2/1.4.2)](https://www.inet.no/dante) 的自动化部署镜像/脚本.
+基于 [Dante socks5 (1.3.2/1.4.3)](https://www.inet.no/dante) 的自动化部署镜像/脚本.
 
 ## Docker 安装模式
 
@@ -16,7 +16,7 @@
 #### 1. 使用 docker run
 
 ```bash
-# sockd.passwd 是密码文件 
+# sockd.passwd 是密码文件
 docker run -d \
     --name sockd \
     --publish 2020:2020 \
@@ -80,14 +80,14 @@ curl https://ifconfig.co --socks5 127.0.0.1:2020 --proxy-user sockd:sockd
 | ----- | ----- |
 | --port= | socks5 端口号码 |
 | --ip=: | 配置的IP地址，默认全部开启，使用:分格 |
-| --version= | dante 版本, 默认 1.3.2, 最新 1.4.2 |
+| --version= | dante 版本, 默认 1.3.2, 最新 1.4.3 |
 | --user= | pam认证用户名 |
 | --passwd= | pam认证用户密码|
 | --master= | 免认证地址，例如 github.com 或者 8.8.8.8/32 |
-    
+
 ### 功能特点
 
-+ 1. 采用dante稳定版本 1.3.2 编译安装 (也同时支持1.4.2)
++ 1. 采用dante稳定版本 1.3.2 编译安装 (也同时支持1.4.3)
 + 2. 自动识别系统IP（默认排除192.168.0.*， 10.0.0.*,127.0.0.*）,根据安装命令选择部分Ip或者全部IP安装(多IP环境)。
 + 3. 采用PAM 用户认证，认证不需要添加系统用户（默认添加进程用户sock），删除、添加用户方便，安全。
 + 4. sock5 运行状态查看,系统启动后自动加载。
