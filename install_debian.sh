@@ -296,7 +296,7 @@ if [ ! -s /lib/security/pam_pwdfile.so ];then
     if [ -f "libpam-pwdfile.zip" ];then
         unzip libpam-pwdfile.zip
         cd libpam-pwdfile-master
-        make && make install
+        make -j && make install
         cd ../
     fi
 fi
@@ -313,7 +313,7 @@ if [ "$INSTALL_FROM" == "compile" ] || [ "$VERSION" != "1.3.2" ];then
     else
        compile_args=''
     fi
-    
+
     download_file "source/dante-${VERSION}.tar.gz" "dante-${VERSION}.tar.gz"
 
     if [ -f "dante-${VERSION}.tar.gz" ];then
@@ -323,7 +323,7 @@ if [ "$INSTALL_FROM" == "compile" ] || [ "$VERSION" != "1.3.2" ];then
         download_file "source/config.guess" "config.guess"
         download_file "source/config.sub" "config.sub"
 
-        ./configure --with-sockd-conf=${CONFIG_PATH} --prefix=${BIN_DIR} ${compile_args} && make && make install
+        ./configure --with-sockd-conf=${CONFIG_PATH} --prefix=${BIN_DIR} ${compile_args} && make -j && make install
     fi
 else
     download_file "package/${PACKAGE_NAME}" "${PACKAGE_NAME}"
