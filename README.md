@@ -1,11 +1,14 @@
 # Sockd
-**Dante socks5 server (v1.3.2/v1.4.2) auto-install and management script** 
+**Dante socks5 server (v1.3.2/v1.4.2) auto-install and management script**
 
 
 ## Update
 
 > #### 2022/11/26
 > Upgrade default version for Debian as 1.4.2
+
+> #### 2022/12/22
+> Upgrade default version for Debian as 1.4.3
 
 ## About
 To build a socks5 server, we have lots of open-source programs to reach that, [Dante](https://www.inet.no/dante/) is one of them.
@@ -19,14 +22,14 @@ Comparing with the apt-get or building from source manually, this script will be
 * Same-rotation, in multi-ipaddr system. It works like when using different ip address to connect socks5, your external ip address will be different. That's the main reason why I using Dante for years.
 * Multi-authorization, you can configure authorization by pam, system or using whitelist.
 * Docker support [New]
-* Support Dante Latest version 1.4.2 [New]
+* Support Dante Latest version 1.4.3 [New]
 
 ## Install by Docker
 
 ### Docker Run
 
 ```bash
-# sockd.passwd is a `htpasswd` file contains socks5 auth user/password. 
+# sockd.passwd is a `htpasswd` file contains socks5 auth user/password.
 docker run -d \
     --name sockd \
     --publish 2020:2020 \
@@ -95,7 +98,7 @@ curl https://ifconfig.co --socks5 127.0.0.1:2020 --proxy-user sockd:sockd
 ## Install by Script
 
 ```bash
-wget --no-check-certificate https://raw.github.com/Lozy/danted/master/install.sh -O install.sh 
+wget --no-check-certificate https://raw.github.com/Lozy/danted/master/install.sh -O install.sh
 bash install.sh
 
 # run with options: bash install.sh option1 option2
@@ -121,7 +124,7 @@ bash install.sh --uninstall
 | :--- | :--- | --- | --- |
 | --ip=                | | ip address list (a.a.a.a:b.b.b.b) *#change ';' to ':' * | Socks5 Server Ip address |
 | --port=             | | Default: 2016| port for dante socks5 server |
-| --version=          | | Default: 1.3.2 | dante server version, latest is 1.4.2 |
+| --version=          | | Default: 1.3.2 | dante server version, latest is 1.4.3 |
 | --user=              | | Pam-Auth Username | Socks5 Auth user |
 | --passwd=            | | Pam-Auth Password |Socks5 Auth passwd |
 | --whitelist=         | | whitelist ip range (a.a.a.a/32:b.b.b.b/32) |Socks5 Auth IP list |
@@ -149,7 +152,7 @@ bash install.sh --uninstall
 ## Test Pass
 
 | OS release | Platform | Provider | Result |
-| :--- | :--- | --- |  --- | 
+| :--- | :--- | --- |  --- |
 | Debian GNU/Linux 8 (jessie) | x86_64 | vultr | pass |
 | Debian GNU/Linux 7 (wheezy) | x86_64 | vultr | pass |
 | Debian GNU/Linux 7 (wheezy) | i686 | vultr | pass |

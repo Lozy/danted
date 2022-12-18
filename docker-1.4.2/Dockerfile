@@ -2,7 +2,7 @@ FROM alpine:latest
 
 ENV MIRROR https://public.sockd.info/source/
 
-ENV DANTE_VER 1.4.2
+ENV DANTE_VER 1.4.3
 ENV DANTE_URL $MIRROR/dante-$DANTE_VER.tar.gz
 ENV DANTE_FILE dante.tar.gz
 ENV DANTE_TEMP /tmp/danted
@@ -28,10 +28,10 @@ RUN apk add --no-cache linux-pam apache2-utils && \
     wget ${CONFIG_GUESS} -O config.guess && \
     wget ${CONFIG_SUB} -O config.sub && \
     ac_cv_func_sched_setscheduler=no ./configure --with-sockd-conf=${DANTE_CONFIG} --prefix=${DANTE_DIR} && \
-    make && make install && \
+    make -j && make install && \
     cd ${DANTE_TEMP} && \
     wget ${LIBPAM_URL} -O ${LIBPAM_FILE} && unzip ${LIBPAM_FILE} && cd ${LIBPAM_DIR} && \
-    make && make install && \
+    make -j && make install && \
     echo "auth required pam_pwdfile.so pwdfile ${DANTE_PASSWD}" > ${LIBPAM_DANTE} && \
     echo "account required pam_permit.so" >> ${LIBPAM_DANTE} && \
     rm -rf ${DANTE_TEMP} && apk del --purge build-base linux-pam-dev

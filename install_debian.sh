@@ -3,7 +3,7 @@
 # Provides:          sockd.info (Lozy)
 #
 
-VERSION="1.4.2"
+VERSION="1.4.3"
 INSTALL_FROM="compile"
 DEFAULT_PORT="2016"
 DEFAULT_USER=""
@@ -21,7 +21,6 @@ BIN_SCRIPT="/etc/init.d/sockd"
 
 DEFAULT_IPADDR=$(ip addr | grep 'inet ' | grep -Ev 'inet 127|inet 192\.168' | \
             sed "s/[[:space:]]*inet \([0-9.]*\)\/.*/\1/")
-RUN_PATH=$(cd `dirname $0`;pwd )
 RUN_OPTS=$*
 
 ##################------------Func()---------#####################################
@@ -58,10 +57,10 @@ generate_config_iplist(){
     [ -z "${port}" ] && return 2
 
     for ipaddr in ${ipaddr_list};do
-        generate_config_ip ${ipaddr} ${port} >> ${CONFIG_PATH}
+        generate_config_ip "${ipaddr}" "${port}" >> ${CONFIG_PATH}
     done
 
-    ipaddr_array=($ipaddr_list)
+    ipaddr_array=("$ipaddr_list")
 
     if [ ${#ipaddr_array[@]} -gt 1 ];then
         echo "external.rotation: same-same" >> ${CONFIG_PATH}
@@ -127,7 +126,7 @@ generate_config_whitelist(){
     local whitelist_url="$1"
 
     if [ -n "${whitelist_url}" ];then
-        ipaddr_list=$(curl -s --insecure -A "Mozilla Server Init" ${whitelist_url})
+        ipaddr_list=$(curl -s --insecure -A "Mozilla Server Init" "${whitelist_url}")
         generate_config_white "${ipaddr_list}"
     fi
 }
@@ -172,10 +171,10 @@ generate_config(){
 
     echo "# Generate by sockd.info" > ${CONFIG_PATH}
 
-    generate_config_iplist "${ipaddr_list}" ${DEFAULT_PORT} >> ${CONFIG_PATH}
+    generate_config_iplist "${ipaddr_list}" "${DEFAULT_PORT}" >> ${CONFIG_PATH}
 
     generate_config_static >> ${CONFIG_PATH}
-    generate_config_white ${whitelist_ip} >> ${CONFIG_PATH}
+    generate_config_white "${whitelist_ip}" >> ${CONFIG_PATH}
     generate_config_whitelist "${whitelist_url}" >> ${CONFIG_PATH}
     generate_config_bottom  >> ${CONFIG_PATH}
 }
@@ -188,9 +187,9 @@ download_file(){
     [ -z "${filename}" ] && filename="$path"
 
     [ -n "$path" ] && \
-        wget -q --no-check-certificate ${SCRIPT_HOST}/${path} -O ${filename}
+        wget -q --no-check-certificate ${SCRIPT_HOST}/"${path}" -O "${filename}"
 
-    [ -f "${filename}" ] && [ -n "${execute}" ] && chmod +x ${filename}
+    [ -f "${filename}" ] && [ -n "${execute}" ] && chmod +x "${filename}"
 }
 
 ##################------------Menu()---------#####################################
@@ -249,10 +248,10 @@ do
                   "--update-whitelist | -u @update white list" \
                   "--force-update | -f @force update sockd" \
                   "--help,-h@print help info" )
-        printf "Usage: %s [OPTIONS]\n\nOptions:\n\n" $0
+        printf "Usage: %s [OPTIONS]\n\nOptions:\n\n" "$0"
 
         for option in "${options[@]}";do
-          printf "  %-20s%s\n" "$( echo ${option} | sed 's/@.*//g')"  "$( echo ${option} | sed 's/.*@//g')"
+          printf "  %-20s%s\n" "${option//@.*//g}" "${option//.*@//g}"
         done
         echo -e "\n"
         exit 1
@@ -286,7 +285,7 @@ download_file "script/sockd" "${BIN_SCRIPT}" "execute"
 apt-get update
 apt-get install unzip apache2-utils gcc g++ make libpam-dev libwrap0-dev -y
 
-mkdir -p /tmp/danted && rm /tmp/danted/* -rf && cd /tmp/danted
+mkdir -p /tmp/danted && rm /tmp/danted/* -rf && cd /tmp/danted || exit
 
 id sockd > /dev/null 2>&1 || useradd sockd -s /bin/false
 
@@ -295,8 +294,8 @@ if [ ! -s /lib/security/pam_pwdfile.so ];then
     download_file "source/libpam-pwdfile.zip" "libpam-pwdfile.zip"
     if [ -f "libpam-pwdfile.zip" ];then
         unzip libpam-pwdfile.zip
-        cd libpam-pwdfile-master
-        make && make install
+        cd libpam-pwdfile-master || exit
+        make -j && make install
         cd ../
     fi
 fi
@@ -313,21 +312,21 @@ if [ "$INSTALL_FROM" == "compile" ] || [ "$VERSION" != "1.3.2" ];then
     else
        compile_args=''
     fi
-    
+
     download_file "source/dante-${VERSION}.tar.gz" "dante-${VERSION}.tar.gz"
 
     if [ -f "dante-${VERSION}.tar.gz" ];then
-        tar xzf dante-${VERSION}.tar.gz --strip 1
+        tar xzf dante-"${VERSION}".tar.gz --strip 1
 
         # PATCH CONFIG
         download_file "source/config.guess" "config.guess"
         download_file "source/config.sub" "config.sub"
 
-        ./configure --with-sockd-conf=${CONFIG_PATH} --prefix=${BIN_DIR} ${compile_args} && make && make install
+        ./configure --with-sockd-conf=${CONFIG_PATH} --prefix=${BIN_DIR} ${compile_args} && make -j && make install
     fi
 else
     download_file "package/${PACKAGE_NAME}" "${PACKAGE_NAME}"
-    [ -f "${PACKAGE_NAME}" ] && dpkg -i ${PACKAGE_NAME}
+    [ -f "${PACKAGE_NAME}" ] && dpkg -i "${PACKAGE_NAME}"
 fi
 
 cat > /etc/pam.d/sockd  <<EOF
@@ -345,7 +344,7 @@ EOF
 rm /usr/bin/sockd -f && ln -s /etc/danted/sbin/sockd /usr/bin/sockd
 ${BIN_SCRIPT} adduser "${DEFAULT_USER}" "${DEFAULT_PAWD}"
 
-if [ -n "$(ls -l /sbin/init | grep systemd)" ];then
+if ls -l /sbin/init/*systemd*;then
     download_file "script/sockd.service" "/lib/systemd/system/sockd.service"
     systemctl enable sockd
 else
@@ -356,7 +355,7 @@ fi
 service sockd restart
 
 
-if [ -n "$(ss -ln | grep "$DEFAULT_PORT")" ];then
+if ss -ln | grep -q "$DEFAULT_PORT";then
     cat <<EOF
 ${CCYAN}+-----------------------------------------+$CEND
 ${CGREEN} Dante Socks5 Install Done. $CEND
