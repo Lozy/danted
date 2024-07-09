@@ -4,6 +4,7 @@ services:
 
   sockd:
     image: lozyme/sockd
+    container_name: sockd
     restart: always
     ports:
       - 2020:2020
